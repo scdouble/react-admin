@@ -3,6 +3,7 @@
  * ReturnはPromiseオブジェクト
  * 1.ajaxのリクエストエラーを統合して処理：外側に新しいPromise作成してAjaxをラップする。
  * エラーが起きたときにRejectせずにエラーメッセージを表示する、
+ * 2. ajaxリクエスト後のresolveはresponseではなく、response.data
 */
 
 import axios from "axios";
@@ -24,7 +25,7 @@ export default function ajax(url, data = {}, type = 'GET') {
     }
     // 成功ならresolve(value)を実行
     promise.then((response) => {
-      resolve(response)
+      resolve(response.data)
 
       // 失敗なら　rejectを使わない(reason)で、　Errorメッセージを表示
     }).catch((error) => {

@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import './Login.css'
-import logo from './images/logo.png'
 import { Form, Input, Button, Typography, message } from 'antd';
 import {
   UserOutlined,
   LockOutlined,
 } from '@ant-design/icons';
+import memoryUtils from '../../utils/memoryUtils';
+import storageUtils from '../../utils/storageUtils';
 
 import { reqLogin } from '../../api' //export defaultであれば{}は書かなくても良い
+import { Redirect } from 'react-router-dom';
 
 
 /* loginのrouteコンポーネント*/
@@ -44,10 +46,14 @@ class Login extends Component {
       if (!err) {
         const { username, password } = values
         // Login処理
-        const response = await reqLogin(username, password)
-        console.log("ログインリクエスト成功", response.data);
-        const result = response.data // OK {status:0, data:user} {status:1,msg:"xxx"}
+        const result = await reqLogin(username, password)
+        // console.log("ログインリクエスト成功", response.data);
+        // const result = response.data // OK {status:0, data:user} {status:1,msg:"xxx"}
         if (result.status === 0) { // Login成功
+          const user = result.data
+          // ユーザデータを保管
+          memoryUtils.user = user; // メモリに保管
+          storageUtils.saveUser(user) // local storageに保管
           // メッセージ表示
           message.success("ログイン成功")
           // Routeを通じて画面遷移
@@ -66,7 +72,11 @@ class Login extends Component {
 
   render() {
 
-    console.log(this.props);
+    // ユーザがログインしていたら、Adminにリダイレクト
+    const user = memoryUtils.user
+    if (user && user._id) {
+      return <Redirect to="/" />
+    }
     // formからgetFieldDecoratorを取得
     const { getFieldDecorator } = this.props.form
 
