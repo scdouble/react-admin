@@ -1,14 +1,22 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect,  Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
 
 import memoryUtils from '../../utils/memoryUtils';
 import LeftNav from '../../components/LeftNav';
 import Header from '../../components/Header';
 
+import Home from '../home/Home'
+import Product from '../product/Product'
+import Category from '../category/Category'
+import User from '../user/User'
+import Role from '../role/Role'
+import Bar from '../charts/Bar'
+import Pie from '../charts/Pie'
+import Line from '../charts/Line'
+
 const { Footer, Sider, Content } = Layout;
 class Admin extends Component {
-
 
   render() {
     const user = memoryUtils.user
@@ -25,8 +33,20 @@ class Admin extends Component {
         </Sider>
         <Layout>
           <Header> Header </Header>
-          <Content style={{backgroundColor:'white'}}>Content</Content>
-          <Footer style={{textAlign:'center', color:'#cccccc'}}>Footer</Footer>
+          <Content style={{ backgroundColor: 'white' }}>
+            <Switch>
+              <Route path="/product" component={Product} />
+              <Route path="/category" component={Category} />
+              <Route path="/user" component={User} />
+              <Route path="/role" component={Role} />
+              <Route path="/home" component={Home} />
+              <Route path="/charts/pie" component={Pie} />
+              <Route path="/charts/bar" component={Bar} />
+              <Route path="/charts/line" component={Line} />
+              <Redirect to="/home" />
+            </Switch>
+          </Content>
+          <Footer style={{ textAlign: 'center', color: '#cccccc' }}>Footer</Footer>
         </Layout>
       </Layout>
     );
