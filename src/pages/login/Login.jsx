@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import './Login.css'
 import logo from './images/logo.png'
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Typography } from 'antd';
 import {
   UserOutlined,
-  LockOutlined
+  LockOutlined,
 } from '@ant-design/icons';
+
+import { reqLogin } from '../../api' //export defaultであれば{}は書かなくても良い
 
 
 /* loginのrouteコンポーネント*/
@@ -13,17 +15,14 @@ class Login extends Component {
 
 
   //パスワードに対してカスタマイズのValidateを使う
-  validatePwd = (rule, value, callback) => {
+  validatePwd = (rules, value, callback) => {
     if (!value) {
-      callback('password is required')
-    } else if (value.length < 4) {
-      callback('password length < 4')
-    }
-    else if (value.length > 12) {
-      callback("password length > 12")
+      callback('パスワードを入力してください')
+    } else if (value.length < 4 || value.length > 12) {
+      callback('パスワードは4文字以上，12文字以下で入力してください')
     }
     else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-      callback("invalid password")
+      callback("パスワードは半角英数のみで入力してください")
     }
     else {
       callback()
@@ -41,10 +40,15 @@ class Login extends Component {
     // console.log('handleSubmit', values)
 
     // form全体のInputに対してValidateする
-    form.validateFields((err, values) => {
+    form.validateFields(async (err, values) => {
       if (!err) {
-        // todo
-        console.log("Send Ajax request", values);
+        const { username, password } = values
+
+        // Login処理
+        const response = await reqLogin(username, password)
+        console.log("ログインリクエスト成功", response.data);
+
+        // console.log("Send Ajax request", values);
         // console.log('Received values of form: ', values);
       } else {
         console.log("Login Input Validation Failed");
@@ -63,13 +67,16 @@ class Login extends Component {
       <div className="login">
 
         <header className="login-header">
-          {/*<img src={logo} alt=""/>*/}
-          <h1>Back Office Management System</h1>
+
+          <Typography.Title>
+            Customize Title
+          </Typography.Title>
+
         </header>
 
         <section className="login-content">
 
-          <h2>User Login</h2>
+          {/* <h2><Icon type="home" /></h2> */}
 
           <Form onSubmit={this.handleSubmit} className="login-form">
             <Form.Item>
@@ -77,11 +84,12 @@ class Login extends Component {
                 getFieldDecorator('username', { // オブション
                   // 声明式のValidation。
                   rules: [
-                    { required: true, whitespace: true, message: 'Username is required.' },
-                    { min: 4, message: 'Username must have 4 letters at least.' },
-                    { max: 12, message: 'Username can not over 12 letters.' },
-                    { pattern: /^[a-zA-Z0-9_]+$/, message: 'Username must be a combination of number or alphabet.' },
-                  ]
+                    { required: true, whitespace: true, message: 'ユーザネームを入力してください.' },
+                    { min: 4, message: 'ユーザネームは4文字以上，12文字以下で入力してください.' },
+                    { max: 12, message: 'ユーザネームは4文字以上，12文字以下で入力してください.' },
+                    { pattern: /^[a-zA-Z0-9_]+$/, message: 'ユーザネームは半角英数のみで入力してください' },
+                  ],
+                  initialValue: 'admin'
                 })(
                   <Input
                     prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -99,7 +107,9 @@ class Login extends Component {
                     {
                       validator: this.validatePwd
                     }
-                  ]
+                  ],
+                  initialValue: 'admin'
+
                 })(
                   <Input
                     prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -113,8 +123,10 @@ class Login extends Component {
 
 
             <Form.Item>
-              <Button type="primary" htmlType="submit"
-                className="login-form-button">
+              <a href="http://localhost:3000" className='login-form-forgot'>
+                パスワードをお忘れの方
+              </a>
+              <Button type="primary" htmlType="submit" className="login-form-button">
                 ログイン
               </Button>
             </Form.Item>
@@ -122,6 +134,15 @@ class Login extends Component {
           </Form>
 
         </section>
+        <section className='login-create-new-account' >
+          <a href="http://">新しくアカウントを作成する</a>
+        </section>
+
+        <footer className='login-footer'>
+          <img src={logo} alt="" />
+
+        </footer>
+
       </div>
     );
   }

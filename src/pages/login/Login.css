@@ -3,29 +3,36 @@
   height: 100%;
   /*background-image: url('./images/login_bg.jpg');*/
   background-size: 100% 100%;
-  background-color: rgb(248,248,248);
-  }
-
-.dark-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  background-color: rgb(248, 248, 248);
 }
 
-.login-header {
+.login-form-forgot {
+  float: right;
+}
+/* .login-header {
   height: 80px;
   background-color: black;
-  color: white ;
+  color: white;
   display: flex;
   align-items: center;
-  border-bottom: rgb(64, 169, 255)  0.5rem solid;
-  padding: 5px 25px ;
+  border-bottom: rgb(64, 169, 255) 0.5rem solid;
+  padding: 5px 25px;
+} */
+
+.login-header {
+height: 120px;
+display: flex;
+align-items: flex-end;
+text-align: center;
+justify-content:center;
 }
 
-h1{
+html {
+  background-color: rgb(248, 248, 248);
+
+}
+
+h1 {
   font-size: 30px;
   margin-bottom: 0px;
   color: white;
@@ -37,19 +44,38 @@ h2 {
   font-weight: bold;
   margin-bottom: 20px;
 }
+
 img {
   height: 40px;
-  margin: 0 15px 0.5em 50px;
+  margin: 0 0 0.5em 0;
 }
 
-.login-form-button{
+.login-form-button {
   width: 100%;
 }
+
+.login-form-forgot {
+float: left;
+font-size: 12px;
+
+}
+
 .login-content {
   width: 400px;
-  height: 300px;
+  height: auto;
   background-color: white;
-margin: 50px auto;
-  border: rgb(229,229,229) solid 0.1rem;
-  padding: 20px 40px;
+  margin: 30px auto 30px;
+  border: rgb(229, 229, 229) solid 0.1rem;
+  padding: 40px 40px;
+  box-shadow: 2px 2px 2px rgb(229, 229, 229);
+}
+
+.login-create-new-account {
+  text-align: center;
+}
+
+.login-footer {
+  position:absolute;
+  bottom: 0;
+
 }
