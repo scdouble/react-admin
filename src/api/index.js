@@ -8,6 +8,10 @@ import ajax from "./ajax";
 // }
 
 // Login
+/***
+ *
+ * @returns promise
+ */
 export const reqLogin = (username, password) => ajax("/login", { username, password }, 'POST')
 
 // ユーザ追加
