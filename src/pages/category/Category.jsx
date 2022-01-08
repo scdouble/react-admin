@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import { Card, Table, Icon, Button, message } from "antd";
+import { Card, Table, Icon, Button, message, Modal } from "antd";
 import { reqCategoryList } from "../../api";
 
+import AddForm from "./AddForm";
+import UpdateForm from "./UpdateForm";
 export default class Category extends Component {
   state = {
     isLoading: false,
@@ -9,15 +11,16 @@ export default class Category extends Component {
     subCategoryList: [], //子カテゴリのリスト
     parentId: "0", //親カテゴリのId
     parentName: "", // 親カテゴリの名前
+    showStatus: 0, //モーダルの表示方法を標識するため。0→表示しない １：カテゴリー追加を表示　２：カテゴリー修正を表示
   };
 
-  showCategoryList = () =>{
+  showCategoryList = () => {
     // Stateを親カテゴリーを取得するような状態に変更する
     this.setState(
       {
         parentId: '0',
         parentName: '',
-        subCategoryList:[]
+        subCategoryList: []
       },
       // () => {
       //   //このCallback関数はState変更後、且つrender()の後に実行される
@@ -63,7 +66,7 @@ export default class Category extends Component {
           record // 画面に表示するためのタグを指定
         ) => (
           <span>
-            <Button type="link">編集</Button>
+            <Button onClick={() => this.openModal(2)} type="link">編集</Button>
             {/* Eventのコールバック関数にパラメータを渡す：まずは匿名関数を定義、関数の中で処理のロジックを定義し、パラメータを入れる */}
             {/* onClick={() => this.showSubCategoryList(record)}の返り値は気にしないから、this.showSubCategoryListは{}をつけなくても大丈夫。 */}
             {this.state.parentId === "0" ? ( // 子カテゴリの場合に小分類を見るLinkを非表示
@@ -114,6 +117,30 @@ export default class Category extends Component {
     }
   };
 
+  /**
+   * モーダル制御のコールバック
+   */
+
+  handleCancel = () => {
+    this.setState({ showStatus: 0 })
+  }
+
+
+  addCategory = (params) => {
+    console.log("addCategory");
+  }
+
+  updateCategory = (params) => {
+    console.log("updateCategory");
+
+  }
+  openModal = (option) => {
+    console.log("open", option);
+    this.setState({ showStatus: option })
+  }
+  /**
+   * ライフサイクルメソッド
+   */
   // 初回のRenderのためにデータを獲得するために実行
   componentWillMount() {
     this.initTableColumns();
@@ -125,7 +152,7 @@ export default class Category extends Component {
   }
 
   render() {
-    const { categoryList, subCategoryList, parentId, parentName, isLoading } =
+    const { categoryList, subCategoryList, parentId, parentName, isLoading, showStatus } =
       this.state;
     // Cardの右のタイトル
     const title = parentId === '0' ? 'カテゴリー一覧' : (
@@ -137,7 +164,7 @@ export default class Category extends Component {
       </span>
     )
     const extra = (
-      <Button type="primary">
+      <Button onClick={() => this.openModal(1)} type="primary">
         <Icon type="plus"></Icon>
         追加
       </Button>
@@ -150,7 +177,27 @@ export default class Category extends Component {
           bordered
           rowKey="_id"
           loading={isLoading}
-        ></Table>
+        >
+        </Table>
+
+        <Modal
+          title="カテゴリーを追加"
+          visible={showStatus === 1}
+          onOk={this.addCategory}
+          onCancel={this.handleCancel}
+        >
+<AddForm />
+        </Modal>
+
+
+        <Modal
+          title="カテゴリーを修正"
+          visible={showStatus === 2}
+          onOk={this.updateCategory}
+          onCancel={this.handleCancel}
+        >
+<UpdateForm />
+        </Modal>
       </Card>
     );
   }
