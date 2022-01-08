@@ -110,7 +110,7 @@ export default class Category extends Component {
 
       // データ取得に失敗した場合
     } else {
-      message.error("カテゴリのデータ取得に失敗しました");
+      message.error("カテゴリデータの取得に失敗しました");
     }
   };
 
@@ -191,6 +191,7 @@ export default class Category extends Component {
 
       </span>
     )
+    // Cardの左のボタン
     const extra = (
       <Button onClick={this.showAddCategory} type="primary">
         <Icon type="plus"></Icon>
@@ -199,6 +200,7 @@ export default class Category extends Component {
     );
     return (
       <Card title={title} extra={extra}>
+        {/* テーブル */}
         <Table
           dataSource={parentId === "0" ? categoryList : subCategoryList}
           columns={this.columns}
@@ -208,6 +210,7 @@ export default class Category extends Component {
         >
         </Table>
 
+        {/* モーダル */}
         <Modal
           title="カテゴリーを追加"
           visible={showStatus === 1}
