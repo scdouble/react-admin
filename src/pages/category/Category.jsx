@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card, Table, Icon, Button, message, Modal } from "antd";
-import { reqCategoryList } from "../../api";
+import { reqCategoryList, reqAddCategory, reqUpdateCategory } from "../../api";
 
 import AddForm from "./AddForm";
 import UpdateForm from "./UpdateForm";
@@ -62,11 +62,9 @@ export default class Category extends Component {
       {
         title: "アクション",
         width: 300,
-        render: (
-          record // 画面に表示するためのタグを指定
-        ) => (
+        render: (record) => (// 画面に表示するためのタグを指定
           <span>
-            <Button onClick={() => this.openModal(2)} type="link">編集</Button>
+            <Button onClick={() => this.showUpdateCategory(record)} type="link">編集</Button>
             {/* Eventのコールバック関数にパラメータを渡す：まずは匿名関数を定義、関数の中で処理のロジックを定義し、パラメータを入れる */}
             {/* onClick={() => this.showSubCategoryList(record)}の返り値は気にしないから、this.showSubCategoryListは{}をつけなくても大丈夫。 */}
             {this.state.parentId === "0" ? ( // 子カテゴリの場合に小分類を見るLinkを非表示
@@ -87,7 +85,6 @@ export default class Category extends Component {
 
   // 親もしくは子カテゴリーデータを取得する
   getCategoryList = async () => {
-    console.log("getCategoryList");
     // リクエストする前にLoadingを表示
     this.setState({ isLoading: true });
 
@@ -122,22 +119,44 @@ export default class Category extends Component {
    */
 
   handleCancel = () => {
+    // formに入力された値を消す
+    this.form.resetFields();
     this.setState({ showStatus: 0 })
   }
 
 
+  showAddCategory = () => {
+    this.setState({ showStatus: 1 })
+  }
+
   addCategory = (params) => {
-    console.log("addCategory");
   }
 
-  updateCategory = (params) => {
-    console.log("updateCategory");
+  showUpdateCategory = (record) => {
+    this.record = record
+    this.setState({ showStatus: 2 })
+  }
+
+  updateCategory = async (params) => {
+    // データを準備
+    const categoryId = this.record._id
+    const categoryName = this.form.getFieldValue('categoryName')
+    // formに入力された値を消す
+    this.form.resetFields();
+
+    // モーダルを閉じる
+    this.setState({ showStatus: 0 })
+
+    // API
+    const result = await reqUpdateCategory({ categoryId, categoryName })
+    if (result.status === 0) {
+      // 新しくカテゴリーを取得
+      this.getCategoryList()
+    }
+
 
   }
-  openModal = (option) => {
-    console.log("open", option);
-    this.setState({ showStatus: option })
-  }
+
   /**
    * ライフサイクルメソッド
    */
@@ -152,8 +171,17 @@ export default class Category extends Component {
   }
 
   render() {
-    const { categoryList, subCategoryList, parentId, parentName, isLoading, showStatus } =
-      this.state;
+    const {
+      categoryList,
+      subCategoryList,
+      parentId,
+      parentName,
+      isLoading,
+      showStatus
+    } = this.state;
+
+    const category = this.record || {}
+
     // Cardの右のタイトル
     const title = parentId === '0' ? 'カテゴリー一覧' : (
       <span>
@@ -164,7 +192,7 @@ export default class Category extends Component {
       </span>
     )
     const extra = (
-      <Button onClick={() => this.openModal(1)} type="primary">
+      <Button onClick={this.showAddCategory} type="primary">
         <Icon type="plus"></Icon>
         追加
       </Button>
@@ -186,9 +214,8 @@ export default class Category extends Component {
           onOk={this.addCategory}
           onCancel={this.handleCancel}
         >
-<AddForm />
+          <AddForm />
         </Modal>
-
 
         <Modal
           title="カテゴリーを修正"
@@ -196,7 +223,10 @@ export default class Category extends Component {
           onOk={this.updateCategory}
           onCancel={this.handleCancel}
         >
-<UpdateForm />
+          <UpdateForm
+            categoryName={category.name}
+            setForm={(form) => { this.form = form }} //updateのformを受け取り　　this.formに保存する
+          />
         </Modal>
       </Card>
     );
