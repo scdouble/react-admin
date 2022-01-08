@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React, {Component} from "react";
 import Login from "./pages/login/Login";
 import Admin from "./pages/admin/Admin";
 
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import {BrowserRouter, Route, Switch} from "react-router-dom";
 
 /* アプリのルートApp*/
 export default class App extends Component {
@@ -12,8 +12,8 @@ export default class App extends Component {
 
       <BrowserRouter>
         <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/" component={Admin} />
+          <Route path="/login" component={Login}/>
+          <Route path="/" component={Admin}/>
         </Switch>
       </BrowserRouter>
 

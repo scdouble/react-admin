@@ -9,6 +9,7 @@
 .login-form-forgot {
   float: right;
 }
+
 /* .login-header {
   height: 80px;
   background-color: black;
@@ -20,11 +21,11 @@
 } */
 
 .login-header {
-height: 120px;
-display: flex;
-align-items: flex-end;
-text-align: center;
-justify-content:center;
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  text-align: center;
+  justify-content: center;
 }
 
 html {
@@ -55,8 +56,8 @@ img {
 }
 
 .login-form-forgot {
-float: left;
-font-size: 12px;
+  float: left;
+  font-size: 12px;
 
 }
 
@@ -75,7 +76,7 @@ font-size: 12px;
 }
 
 .login-footer {
-  position:absolute;
+  position: absolute;
   bottom: 0;
 
 }

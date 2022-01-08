@@ -4,10 +4,12 @@
  * 1.ajaxのリクエストエラーを統合して処理：外側に新しいPromise作成してAjaxをラップする。
  * エラーが起きたときにRejectせずにエラーメッセージを表示する、
  * 2. ajaxリクエスト後のresolveはresponseではなく、response.data
-*/
+ */
 
 import axios from "axios";
-import { message } from 'antd'
+
+import {message} from 'antd'
+
 export default function ajax(url, data = {}, type = 'GET') {
 
   // executor
@@ -29,7 +31,7 @@ export default function ajax(url, data = {}, type = 'GET') {
 
       // 失敗なら　rejectを使わない(reason)で、　Errorメッセージを表示
     }).catch((error) => {
-      message.error("ログインリクエスト失敗: " + error.message)
+      message.error("HTTPリクエスト失敗: " + error.message)
     })
   })
 
