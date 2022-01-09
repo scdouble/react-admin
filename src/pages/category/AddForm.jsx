@@ -1,22 +1,40 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
 import { Form, Input, Select } from 'antd'
 const { Option } = Select;
 const { Item } = Form
 
 class AddForm extends Component {
+  static propTypes = {
+    categoryList: PropTypes.array.isRequired, //トップレベルのカテゴリーのリスト
+    parentId: PropTypes.string.isRequired //親コンポーネントのID
+  }
+
+  componentDidMount() {
+    // formを親に渡す
+    this.props.setForm(this.props.form)
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { categoryList, parentId } = this.props
     return (
       <Form >
         <Item label="カテゴリー">
           {
             getFieldDecorator('parentId', {
-              initialValue: '0'
+              initialValue: parentId
             })(
               <Select>
                 <Option value='0'>トップレベルの分類</Option>
-                <Option value='1'>コンピューター</Option>
-                <Option value='2'>図書</Option>
+                {
+                  categoryList.map((category) => {
+                    return <Option value={category._id} key={category._id}>{category.name}</Option>
+                  })
+
+                }
+
               </Select>
             )
           }
@@ -25,10 +43,9 @@ class AddForm extends Component {
         <Item label="カテゴリー名">
           {
             getFieldDecorator('categoryName', {
-              rules: [{
-                required: true,
-                message: "カテゴリー名を入力してください"
-              }]
+              rules: [
+                { required: true, message: "カテゴリー名を入力してください" }
+              ]
             })(
               <Input placeholder='カテゴリー名を入力してください' />
             )

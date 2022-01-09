@@ -83,13 +83,18 @@ export default class Category extends Component {
     ];
   };
 
-  // 親もしくは子カテゴリーデータを取得する
-  getCategoryList = async () => {
+  /**
+   * 親もしくは子カテゴリーデータを取得する
+   *
+   * @param {string} parentId parentIdの指定がなければ、Stateの中からデータを取得してAPIリクエストを出す
+   */
+  getCategoryList = async (parentId) => {
     // リクエストする前にLoadingを表示
     this.setState({ isLoading: true });
 
     // StateからparentIdを取得
-    const { parentId } = this.state;
+    parentId = parentId || this.state.parentId;
+    // const {parentId } = this.state
 
     // parentIdを元にカテゴリーを取得
     const result = await reqCategoryList(parentId);
@@ -130,6 +135,29 @@ export default class Category extends Component {
   }
 
   addCategory = (params) => {
+
+    this.form.validateFields(async (err, values) => {
+      if (!err) {
+        // データを収集
+        const { categoryName, parentId } = this.form.getFieldsValue()
+        // モーダルを閉じる
+        this.setState({ showStatus: 0 })
+        // formに入力された値を消す
+        this.form.resetFields();
+        // リクエストを出す
+        const result = await reqAddCategory(parentId, categoryName)
+        if (result.status === 0) {
+          // 新しくカテゴリーを取得
+          if (parentId === this.state.parentId) {//追加したカテゴリーと現在表示しているカテゴリと同じのときにデータを再取得
+            this.getCategoryList()
+          } else if (parentId === '0') {//子カテゴリで親カテゴリを追加した場合、もう一度親カテゴリのリストを取得する。画面の遷移はなし
+            // this.setState({parentId:'0'},()=>{})
+            this.getCategoryList('0')
+          }
+        }
+      }
+    })
+
   }
 
   showUpdateCategory = (record) => {
@@ -137,22 +165,29 @@ export default class Category extends Component {
     this.setState({ showStatus: 2 })
   }
 
-  updateCategory = async (params) => {
-    // データを準備
-    const categoryId = this.record._id
-    const categoryName = this.form.getFieldValue('categoryName')
-    // formに入力された値を消す
-    this.form.resetFields();
+  updateCategory = (params) => {
 
-    // モーダルを閉じる
-    this.setState({ showStatus: 0 })
+    // formのバリデーション
+    this.form.validateFields(async (err, values) => {
+      if (!err) {
+        // データを準備
+        const categoryId = this.record._id
+        const { categoryName } = values
+        // formに入力された値を消す
+        this.form.resetFields();
 
-    // API
-    const result = await reqUpdateCategory({ categoryId, categoryName })
-    if (result.status === 0) {
-      // 新しくカテゴリーを取得
-      this.getCategoryList()
-    }
+        // モーダルを閉じる
+        this.setState({ showStatus: 0 })
+
+        // APIコール
+        const result = await reqUpdateCategory({ categoryId, categoryName })
+        if (result.status === 0) {
+          // 新しくカテゴリーを取得
+          this.getCategoryList()
+        }
+      }
+    })
+
 
 
   }
@@ -164,6 +199,7 @@ export default class Category extends Component {
   componentWillMount() {
     this.initTableColumns();
   }
+
 
   // 非同期側のことをする
   componentDidMount() {
@@ -177,7 +213,8 @@ export default class Category extends Component {
       parentId,
       parentName,
       isLoading,
-      showStatus
+      showStatus,
+      confirmLoading
     } = this.state;
 
     const category = this.record || {}
@@ -217,7 +254,11 @@ export default class Category extends Component {
           onOk={this.addCategory}
           onCancel={this.handleCancel}
         >
-          <AddForm />
+          <AddForm
+            categoryList={categoryList}
+            parentId={parentId}
+            setForm={(form) => { this.form = form }}
+          />
         </Modal>
 
         <Modal
@@ -225,6 +266,7 @@ export default class Category extends Component {
           visible={showStatus === 2}
           onOk={this.updateCategory}
           onCancel={this.handleCancel}
+          confirmLoading={confirmLoading}
         >
           <UpdateForm
             categoryName={category.name}
