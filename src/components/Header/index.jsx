@@ -74,9 +74,6 @@ class Header extends Component {
     this.getWeather();
   }
 
-  componentWillMount() {
-  }
-
   /**
    * コンポーネントがUnmountする前に実行
    */
