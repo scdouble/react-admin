@@ -18,8 +18,8 @@ const menuList = [
         title: "商品管理",
         icon: "barcode",
         key: "/product",
-      }
-    ]
+      },
+    ],
   },
   {
     title: "ユーザ管理",
@@ -51,10 +51,8 @@ const menuList = [
         icon: "line-chart",
         key: "/charts/line",
       },
-
-    ]
+    ],
   },
+];
 
-]
-
-export default menuList
+export default menuList;

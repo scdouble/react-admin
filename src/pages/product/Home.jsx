@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
-import { Card, Select, Button, Input, Icon, Table } from 'antd'
-import { reqProducts, reqSearchProducts } from '../../api';
+import { Card, Select, Button, Input, Icon, Table, message } from 'antd'
+import { reqProducts, reqSearchProducts, reqUpdateProductStatus } from '../../api';
 import { PAGE_SIZE } from '../../utils/constants';
 
 
@@ -14,7 +14,7 @@ export default class ProductHome extends Component {
     super(props);
     this.initColumns();
     this.state = {
-      product: [],
+      products: [],
       total: 0,
       isLoading: false,
       searchType: "productName",
@@ -33,12 +33,17 @@ export default class ProductHome extends Component {
         render: (price) => { return '¥' + price }
       },
       {
-        title: "状態", dataIndex: "status", width: 100,
-        render: (status) => {
+        title: "状態", width: 100,
+        render: (record) => {
           return (
             <span>
-              <span>販売中</span>
-              <Button type="primary">取り下げ</Button>
+              <span>{record.status === 1 ? "販売中" : "取り下げ済み"}</span>
+              <Button
+                onClick={() => this.updateStatus(record._id, record.status === 1 ? 2 : 1)}
+                type="primary"
+              >
+                {record.status === 1 ? "取り下げ" : "販売"}
+              </Button>
             </span>
           )
         }
@@ -47,7 +52,8 @@ export default class ProductHome extends Component {
         title: "操作", width: 100, render: (record) => {
           return (
             <span>
-              <Button type="link">詳細</Button>
+              {/* ProductのObjectをRouteのStateとして目的にRouteに渡す */}
+              <Button onClick={() => this.props.history.push("/product/detail", { record })} type="link">詳細</Button>
               <Button type="link">編集</Button>
             </span>
           )
@@ -57,11 +63,20 @@ export default class ProductHome extends Component {
 
   }
 
+
+  updateStatus = async (productId, status) => {
+    const result = await reqUpdateProductStatus(productId, status)
+    if (result.status === 0) {
+      message.success("State Update OK")
+      this.getProducts(this.pageNum)
+    }
+  }
   /**
    * 指定したページ番号の商品を取得
    * @param {number} pageNum
    */
   getProducts = async (pageNum) => {
+    this.pageNum = pageNum //pageNumを保存
     this.setState({ isLoading: true }) // 表のLoadingを表示
 
     const { searchName, searchType } = this.state

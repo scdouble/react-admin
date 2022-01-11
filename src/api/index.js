@@ -106,7 +106,7 @@ export const reqSearchProducts = ({
   searchType,
 }) =>
   ajax(
-    "manage/product/search",
+    "/manage/product/search",
     {
       pageSize,
       pageNum,
@@ -114,3 +114,12 @@ export const reqSearchProducts = ({
     },
     "GET"
   );
+
+export const reqCategory = (categoryId) => {
+  return ajax("/manage/category/info", { categoryId }, "GET");
+};
+
+// 商品のステータスを更新する
+export const reqUpdateProductStatus=(productId,status)=>{
+  return (ajax("/manage/product/updateStatus", {productId,status}, "POST"))
+}
