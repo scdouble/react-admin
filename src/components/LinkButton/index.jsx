@@ -8,5 +8,9 @@ import "./index.css";
  */
 
 export default function LinkButton(props) {
-  return <button className="link-button" {...props}>{props.children}</button>;
+  return (
+    <button className="link-button" {...props}>
+      {props.children}
+    </button>
+  );
 }

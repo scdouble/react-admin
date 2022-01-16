@@ -120,6 +120,6 @@ export const reqCategory = (categoryId) => {
 };
 
 // 商品のステータスを更新する
-export const reqUpdateProductStatus=(productId,status)=>{
-  return (ajax("/manage/product/updateStatus", {productId,status}, "POST"))
-}
+export const reqUpdateProductStatus = (productId, status) => {
+  return ajax("/manage/product/updateStatus", { productId, status }, "POST");
+};

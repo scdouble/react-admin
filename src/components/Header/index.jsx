@@ -1,11 +1,11 @@
-import React, {Component} from "react";
-import {withRouter} from "react-router-dom";
-import {Modal, Button} from 'antd';
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
+import { Modal, Button } from "antd";
 
-import {reqWeather} from "../../api";
-import {formateDate} from "../../utils/dateUtils";
+import { reqWeather } from "../../api";
+import { formateDate } from "../../utils/dateUtils";
 import memoryUtils from "../../utils/memoryUtils";
-import storageUtils from "../../utils/storageUtils"
+import storageUtils from "../../utils/storageUtils";
 import menuList from "../../config/menuConfig";
 import "./index.css";
 
@@ -19,13 +19,13 @@ class Header extends Component {
 
   getTime = () => {
     this.timer = setInterval(() => {
-      this.setState({currentTime: formateDate(Date.now())});
+      this.setState({ currentTime: formateDate(Date.now()) });
     }, 1000);
   };
 
   getWeather = async () => {
     const result = await reqWeather("35.5299", "139.7024");
-    this.setState({weatherSummary: result.summary, weatherIcon: result.icon});
+    this.setState({ weatherSummary: result.summary, weatherIcon: result.icon });
   };
 
   getTitle = () => {
@@ -36,38 +36,34 @@ class Header extends Component {
       if (item.key === path) {
         title = item.title;
       } else if (item.children) {
-        //　子メニュの中でItem,keyとPathを比較　
+        //　子メニュの中でItem,keyとPathを比較
         // 一致する項目があればTitleに表示
         const cItem = item.children.find((cItem) => {
-          return cItem.key === path
+          return cItem.key === path;
         });
         if (cItem) {
-          title = cItem.title
+          title = cItem.title;
         }
       }
     });
-    return title
+    return title;
   };
 
   logOut = (e) => {
-
     Modal.confirm({
       title: "ログアウト",
       content: "ログアウトします。よろしいですか？",
       onOk: () => {
         console.log("OK");
-        storageUtils.removeUser()
-        memoryUtils.user = {}
-        this.props.history.replace('/login')
-
+        storageUtils.removeUser();
+        memoryUtils.user = {};
+        this.props.history.replace("/login");
       },
       onCancel() {
         console.log("");
-      }
-
-    })
-  }
-
+      },
+    });
+  };
 
   componentDidMount() {
     this.getTime();
@@ -84,14 +80,16 @@ class Header extends Component {
 
   render() {
     const username = memoryUtils.user.username;
-    const {currentTime, weatherIcon, weatherSummary} = this.state;
+    const { currentTime, weatherIcon, weatherSummary } = this.state;
     const title = this.getTitle();
 
     return (
       <div className="header">
         <div className="header-top">
           <span>Welcome, {username}</span>
-          <Button type="link" onClick={this.logOut}>ログアウト</Button>
+          <Button type="link" onClick={this.logOut}>
+            ログアウト
+          </Button>
         </div>
 
         <div className="header-bottom">

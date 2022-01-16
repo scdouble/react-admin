@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import { Switch, Route, Redirect } from 'react-router-dom'
-import './product.css'
-import ProductHome from './Home'
-import ProductAddUpdate from './AddUpdate'
-import ProductDetail from './Detail'
+import React, { Component } from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
+import "./product.css";
+import ProductHome from "./Home";
+import ProductAddUpdate from "./AddUpdate";
+import ProductDetail from "./Detail";
 export default class Product extends Component {
   render() {
     return (
@@ -13,6 +13,6 @@ export default class Product extends Component {
         <Route path="/product/addupdate" component={ProductAddUpdate} />
         <Redirect to="/product" />
       </Switch>
-    )
+    );
   }
 }
