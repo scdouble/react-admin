@@ -9,11 +9,49 @@ import {
   Button,
   Icon,
 } from "antd";
+import { reqCategoryList } from "../../api";
 
 const { Item } = Form;
 const { TextArea } = Input;
+
+// const options = [
+//   {
+//     value: "zhejiang",
+//     label: "Zhejiang",
+//     isLeaf: false,
+//   },
+//   {
+//     value: "jiangsu",
+//     label: "Jiangsu",
+//     isLeaf: false,
+//   },
+// ];
 //プロダクトの追加更新の子Route
 class ProductAddUpdate extends Component {
+  state = {
+    options: [],
+  };
+
+  // トップレベルのカテゴリーもしくは子カテゴリー
+  getCategories = async (parentId) => {
+    const result = await reqCategoryList(parentId); // { status: 0, data: categoryList}
+    if (result.status === 0) {
+      const categoryList = result.data;
+      this.initOptions(categoryList);
+    }
+  };
+
+  initOptions = (categoryList) => {
+    // categoryListを元にoptionsのデータを生成
+    const options = categoryList.map((category) => ({
+      value: category._id,
+      label: category.name,
+      isLeaf: false,
+    }));
+
+    this.setState({ options });
+  };
+
   /**
    * 値段Inputの入力値をValidateする
    */
@@ -34,6 +72,40 @@ class ProductAddUpdate extends Component {
       }
     });
   };
+
+  /** 次のレベルのカテゴリーのデータをローディング */
+  loadData = (selectedOptions) => {
+    // 選択したOptionsを取得
+    const targetOption = selectedOptions[selectedOptions.length - 1];
+    // データローディングのマークを表示
+    targetOption.loading = true;
+
+    // load options lazily
+    setTimeout(() => {
+      targetOption.loading = false;
+      targetOption.children = [
+        {
+          label: `${targetOption.label} Dynamic 1`,
+          value: "dynamic1",
+          isLeaf: true,
+        },
+        {
+          label: `${targetOption.label} Dynamic 2`,
+          value: "dynamic2",
+          isLeaf: true,
+        },
+      ];
+      // Stateを更新
+      this.setState({
+        options: [...this.state.options],
+      });
+    }, 1000);
+  };
+
+  componentDidMount() {
+    this.getCategories()
+  }
+
   render() {
     // ItemのLayoutを設定
     const formItemLayout = {
@@ -80,7 +152,10 @@ class ProductAddUpdate extends Component {
             })(<Input type="number" addonAfter="JPY"></Input>)}
           </Item>
           <Item label="カテゴリー">
-            <div>カテゴリー</div>
+            <Cascader
+              options={this.state.options} /** 表示するカテゴリーリスト */
+              loadData={this.loadData}
+            />
           </Item>
           <Item label="商品の詳細">
             <div>商品の詳細</div>
