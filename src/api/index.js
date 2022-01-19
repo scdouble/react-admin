@@ -2,9 +2,9 @@
  * APIドキュメントを参照して書く
  * FunctionのReturnはPromise
  */
-import { message } from "antd";
-import jsonp from "jsonp";
-import ajax from "./ajax";
+import { message } from 'antd';
+import jsonp from 'jsonp';
+import ajax from './ajax';
 // export function reqLogin(username, password) {
 //   return ajax("/login", { username, password }, 'POST')
 // }
@@ -16,17 +16,16 @@ import ajax from "./ajax";
  */
 export const reqLogin = (username, password) =>
   ajax(
-    "/login",
+    '/login',
     {
       username,
       password,
     },
-    "POST"
+    'POST',
   );
 
 // ユーザ追加
-export const reqAddUser = (userObj) =>
-  ajax("/manage/user/add", userObj, "POST");
+export const reqAddUser = (userObj) => ajax('/manage/user/add', userObj, 'POST');
 
 /**
  * dark sky APIから天気情報を取得する
@@ -45,7 +44,7 @@ export const reqWeather = (longitude, latitude) => {
         resolve({ summary, icon });
       } else {
         //リクエスト失敗の場合
-        message.error("Request failed for getting weather information");
+        message.error('Request failed for getting weather information');
       }
     });
   });
@@ -57,7 +56,7 @@ export const reqWeather = (longitude, latitude) => {
  * @returns {Promise} Promiseオブジェクト
  */
 export const reqCategoryList = (parentId) =>
-  ajax("/manage/category/list", { parentId: parentId }, "GET");
+  ajax('/manage/category/list', { parentId: parentId }, 'GET');
 
 /**
  * カテゴリーを追加する
@@ -67,12 +66,12 @@ export const reqCategoryList = (parentId) =>
  */
 export const reqAddCategory = (parentId, categoryName) =>
   ajax(
-    "/manage/category/add",
+    '/manage/category/add',
     {
       parentId: parentId,
       categoryName: categoryName,
     },
-    "POST"
+    'POST',
   );
 
 /**
@@ -82,16 +81,16 @@ export const reqAddCategory = (parentId, categoryName) =>
  */
 export const reqUpdateCategory = ({ categoryId, categoryName }) =>
   ajax(
-    "/manage/category/update",
+    '/manage/category/update',
     {
       categoryId: categoryId,
       categoryName: categoryName,
     },
-    "POST"
+    'POST',
   );
 
 export const reqProducts = (pageNum, pageSize) =>
-  ajax("/manage/product/list", { pageNum, pageSize }, "GET");
+  ajax('/manage/product/list', { pageNum, pageSize }, 'GET');
 
 /**
  * 商品検索
@@ -99,27 +98,22 @@ export const reqProducts = (pageNum, pageSize) =>
  * @param {(string | object)} searchObj
  * @returns
  */
-export const reqSearchProducts = ({
-  pageNum,
-  pageSize,
-  searchName,
-  searchType,
-}) =>
+export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType }) =>
   ajax(
-    "/manage/product/search",
+    '/manage/product/search',
     {
       pageSize,
       pageNum,
       [searchType]: searchName,
     },
-    "GET"
+    'GET',
   );
 
 export const reqCategory = (categoryId) => {
-  return ajax("/manage/category/info", { categoryId }, "GET");
+  return ajax('/manage/category/info', { categoryId }, 'GET');
 };
 
 // 商品のステータスを更新する
 export const reqUpdateProductStatus = (productId, status) => {
-  return ajax("/manage/product/updateStatus", { productId, status }, "POST");
+  return ajax('/manage/product/updateStatus', { productId, status }, 'POST');
 };

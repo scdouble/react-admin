@@ -1,14 +1,5 @@
 import React, { Component } from "react";
-import {
-  Card,
-  Form,
-  Input,
-  Select,
-  Cascader,
-  Upload,
-  Button,
-  Icon,
-} from "antd";
+import { Card, Form, Input, Select, Cascader, Upload, Button, Icon } from "antd";
 import { reqCategoryList } from "../../api";
 
 const { Item } = Form;
@@ -32,12 +23,20 @@ class ProductAddUpdate extends Component {
     options: [],
   };
 
-  // トップレベルのカテゴリーもしくは子カテゴリー
+  // 非同期でトップレベルのカテゴリーもしくは子カテゴリーのデータを取得して表示
+  // async関数のReturn値はPromise, promiseの結果と値はasync関数の実行結果によって決まる
   getCategories = async (parentId) => {
     const result = await reqCategoryList(parentId); // { status: 0, data: categoryList}
     if (result.status === 0) {
       const categoryList = result.data;
-      this.initOptions(categoryList);
+
+      //トップレベルのカテゴリー
+      if (parentId === "0") {
+        this.initOptions(categoryList);
+      } else {
+        // 　子カテゴリーを返す　==>　Async関数が返すPromiseは成功で、かつValueはCategoryList
+        return categoryList;
+      }
     }
   };
 
@@ -74,36 +73,40 @@ class ProductAddUpdate extends Component {
   };
 
   /** 次のレベルのカテゴリーのデータをローディング */
-  loadData = (selectedOptions) => {
+  loadData = async (selectedOptions) => {
     // 選択したOptionsを取得
     const targetOption = selectedOptions[selectedOptions.length - 1];
     // データローディングのマークを表示
     targetOption.loading = true;
 
-    // load options lazily
-    setTimeout(() => {
-      targetOption.loading = false;
-      targetOption.children = [
-        {
-          label: `${targetOption.label} Dynamic 1`,
-          value: "dynamic1",
+    // 選択されたカテゴリーからその下のカテゴリーを選択
+    const subCategories = await this.getCategories(targetOption.value);
+    // データローディングのマークを非表示
+    targetOption.loading = false;
+    // 子カテゴリーにデータが存在する場合
+    if (subCategories && subCategories.length > 0) {
+      // 子カテゴリリストを生成
+      const childOptions = subCategories.map((category) => {
+        return {
+          value: category._id,
+          label: category.name,
           isLeaf: true,
-        },
-        {
-          label: `${targetOption.label} Dynamic 2`,
-          value: "dynamic2",
-          isLeaf: true,
-        },
-      ];
-      // Stateを更新
-      this.setState({
-        options: [...this.state.options],
+        };
       });
-    }, 1000);
+      // 現在のカテゴリに関連付けする
+      targetOption.children = childOptions;
+    } else {
+      //現在のカテゴリの下に子カテゴリがない場合
+      targetOption.isLeaf = true;
+    }
+
+    this.setState({
+      options: [...this.state.options],
+    });
   };
 
   componentDidMount() {
-    this.getCategories()
+    this.getCategories("0");
   }
 
   render() {
@@ -137,25 +140,17 @@ class ProductAddUpdate extends Component {
           <Item label="商品の説明">
             {getFieldDecorator("desc", {
               initialValue: "",
-              rules: [
-                { required: true, message: "商品の説明を入力してださい" },
-              ],
+              rules: [{ required: true, message: "商品の説明を入力してださい" }],
             })(<TextArea autoSize={{ minRows: 2 }}></TextArea>)}
           </Item>
           <Item label="商品の値段">
             {getFieldDecorator("price", {
               initialValue: "",
-              rules: [
-                { required: true, message: "値段を入力してださい" },
-                { validator: this.validatePrice },
-              ],
+              rules: [{ required: true, message: "値段を入力してださい" }, { validator: this.validatePrice }],
             })(<Input type="number" addonAfter="JPY"></Input>)}
           </Item>
           <Item label="カテゴリー">
-            <Cascader
-              options={this.state.options} /** 表示するカテゴリーリスト */
-              loadData={this.loadData}
-            />
+            <Cascader options={this.state.options} /** 表示するカテゴリーリスト */ loadData={this.loadData} />
           </Item>
           <Item label="商品の詳細">
             <div>商品の詳細</div>

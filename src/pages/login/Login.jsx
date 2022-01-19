@@ -92,13 +92,11 @@ class Login extends Component {
                   },
                   {
                     min: 4,
-                    message:
-                      "ユーザネームは4文字以上，12文字以下で入力してください.",
+                    message: "ユーザネームは4文字以上，12文字以下で入力してください.",
                   },
                   {
                     max: 12,
-                    message:
-                      "ユーザネームは4文字以上，12文字以下で入力してください.",
+                    message: "ユーザネームは4文字以上，12文字以下で入力してください.",
                   },
                   {
                     pattern: /^[a-zA-Z0-9_]+$/,
@@ -106,12 +104,7 @@ class Login extends Component {
                   },
                 ],
                 initialValue: "admin",
-              })(
-                <Input
-                  prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
-                  placeholder="Username"
-                />
-              )}
+              })(<Input prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />} placeholder="Username" />)}
             </Form.Item>
 
             <Form.Item>
@@ -133,18 +126,12 @@ class Login extends Component {
             </Form.Item>
 
             <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="login-form-button"
-              >
+              <Button type="primary" htmlType="submit" className="login-form-button">
                 ログイン
               </Button>
 
               <div className="login-forget">
-                <a href="http://localhost:3000">
-                  パスワードをお忘れの方はこちら
-                </a>
+                <a href="http://localhost:3000">パスワードをお忘れの方はこちら</a>
               </div>
             </Form.Item>
           </Form>

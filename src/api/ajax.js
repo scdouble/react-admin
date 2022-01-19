@@ -8,31 +8,32 @@
 
 import axios from "axios";
 
-import {message} from 'antd'
+import { message } from "antd";
 
-export default function ajax(url, data = {}, type = 'GET') {
-
+export default function ajax(url, data = {}, type = "GET") {
   // executor
   return new Promise((resolve, reject) => {
     let promise;
     // ajaxリクエストを実行
-    if (type === 'GET') {
+    if (type === "GET") {
       // GETリクエスト
-      promise = axios.get(url, {// config　object
-        params: data
-      })
+      promise = axios.get(url, {
+        // config　object
+        params: data,
+      });
     } else {
       // POSTリクエスト
-      promise = axios.post(url, data)
+      promise = axios.post(url, data);
     }
     // 成功ならresolve(value)を実行
-    promise.then((response) => {
-      resolve(response.data)
+    promise
+      .then((response) => {
+        resolve(response.data);
 
-      // 失敗なら　rejectを使わない(reason)で、　Errorメッセージを表示
-    }).catch((error) => {
-      message.error("HTTPリクエスト失敗: " + error.message)
-    })
-  })
-
+        // 失敗なら　rejectを使わない(reason)で、　Errorメッセージを表示
+      })
+      .catch((error) => {
+        message.error("HTTPリクエスト失敗: " + error.message);
+      });
+  });
 }

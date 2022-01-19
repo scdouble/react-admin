@@ -21,10 +21,7 @@ export default class ProductDetail extends Component {
       const cName1 = result.data.name;
       this.setState({ cName1 });
     } else {
-      const results = await Promise.all([
-        reqCategory(pCategoryId),
-        reqCategory(categoryId),
-      ]);
+      const results = await Promise.all([reqCategory(pCategoryId), reqCategory(categoryId)]);
       console.log(results);
       const cName1 = results[0].data.name;
       const cName2 = results[1].data.name;
@@ -39,8 +36,7 @@ export default class ProductDetail extends Component {
   }
 
   render() {
-    const { name, desc, price, imgs, detail } =
-      this.props.location.state.record;
+    const { name, desc, price, imgs, detail } = this.props.location.state.record;
     const { cName1, cName2 } = this.state;
 
     const title = (
@@ -84,12 +80,7 @@ export default class ProductDetail extends Component {
             {imgs.map((img) => {
               return (
                 <span>
-                  <img
-                    key={img}
-                    className="product-img"
-                    src={BASE_IMG_URL + img}
-                    alt={img}
-                  />
+                  <img key={img} className="product-img" src={BASE_IMG_URL + img} alt={img} />
                 </span>
               );
             })}

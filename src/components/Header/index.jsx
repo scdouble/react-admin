@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import { withRouter } from "react-router-dom";
-import { Modal, Button } from "antd";
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
+import { Modal, Button } from 'antd';
 
-import { reqWeather } from "../../api";
-import { formateDate } from "../../utils/dateUtils";
-import memoryUtils from "../../utils/memoryUtils";
-import storageUtils from "../../utils/storageUtils";
-import menuList from "../../config/menuConfig";
-import "./index.css";
+import { reqWeather } from '../../api';
+import { formateDate } from '../../utils/dateUtils';
+import memoryUtils from '../../utils/memoryUtils';
+import storageUtils from '../../utils/storageUtils';
+import menuList from '../../config/menuConfig';
+import './index.css';
 
 // ヘッダー部のComponent
 class Header extends Component {
   state = {
     currentTime: formateDate(Date.now()),
-    weatherIcon: "",
-    weatherSummary: "",
+    weatherIcon: '',
+    weatherSummary: '',
   };
 
   getTime = () => {
@@ -24,7 +24,7 @@ class Header extends Component {
   };
 
   getWeather = async () => {
-    const result = await reqWeather("35.5299", "139.7024");
+    const result = await reqWeather('35.5299', '139.7024');
     this.setState({ weatherSummary: result.summary, weatherIcon: result.icon });
   };
 
@@ -51,16 +51,16 @@ class Header extends Component {
 
   logOut = (e) => {
     Modal.confirm({
-      title: "ログアウト",
-      content: "ログアウトします。よろしいですか？",
+      title: 'ログアウト',
+      content: 'ログアウトします。よろしいですか？',
       onOk: () => {
-        console.log("OK");
+        console.log('OK');
         storageUtils.removeUser();
         memoryUtils.user = {};
-        this.props.history.replace("/login");
+        this.props.history.replace('/login');
       },
       onCancel() {
-        console.log("");
+        console.log('');
       },
     });
   };
@@ -96,10 +96,7 @@ class Header extends Component {
           <div className="header-bottom-left">{title}</div>
           <div className="header-bottom-right">
             <span>{currentTime}</span>
-            <img
-              src={`https://darksky.net/images/weather-icons/${weatherIcon}.png`}
-              alt=""
-            />
+            <img src={`https://darksky.net/images/weather-icons/${weatherIcon}.png`} alt="" />
             <span>{weatherSummary}</span>
           </div>
         </div>

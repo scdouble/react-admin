@@ -1,3 +1,2 @@
-
-export const PAGE_SIZE = 10
-export const BASE_IMG_URL = "http://localhost:5001/upload"
+export const PAGE_SIZE = 10;
+export const BASE_IMG_URL = "http://localhost:5001/upload";

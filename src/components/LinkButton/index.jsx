@@ -1,5 +1,5 @@
-import React from "react";
-import "./index.css";
+import React from 'react';
+import './index.css';
 
 /**
  * 見た目がハイパーリンクのボタン
