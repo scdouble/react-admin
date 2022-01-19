@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Form, Input, Select, Cascader, Upload, Button, Icon } from 'antd';
 import { reqCategoryList } from '../../api';
+import PicturesWall from './PictureWall';
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -207,11 +208,14 @@ class ProductAddUpdate extends Component {
             })(
               <Cascader
                 options={this.state.options}
-                placeholder='カテゴリーを選択してください'
+                placeholder="カテゴリーを選択してください"
                 /** 表示するカテゴリーリスト */
                 loadData={this.loadData}
               />,
             )}
+          </Item>
+          <Item label="商品の画像">
+            <PicturesWall />
           </Item>
           <Item label="商品の詳細">
             <div>商品の詳細</div>
