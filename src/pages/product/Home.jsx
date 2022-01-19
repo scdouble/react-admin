@@ -54,7 +54,7 @@ export default class ProductHome extends Component {
               <Button onClick={() => this.props.history.push('/product/detail', { record })} type="link">
                 詳細
               </Button>
-              <Button type="link">編集</Button>
+              <Button onClick={()=>{ return this.props.history.push('/product/addupdate'), record}} type="link">編集</Button>
             </span>
           )
         },

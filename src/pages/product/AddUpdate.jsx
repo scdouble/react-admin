@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { Card, Form, Input, Select, Cascader, Upload, Button, Icon } from "antd";
-import { reqCategoryList } from "../../api";
+import React, { Component } from 'react';
+import { Card, Form, Input, Select, Cascader, Upload, Button, Icon } from 'antd';
+import { reqCategoryList } from '../../api';
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -31,7 +31,7 @@ class ProductAddUpdate extends Component {
       const categoryList = result.data;
 
       //トップレベルのカテゴリー
-      if (parentId === "0") {
+      if (parentId === '0') {
         this.initOptions(categoryList);
       } else {
         // 　子カテゴリーを返す　==>　Async関数が返すPromiseは成功で、かつValueはCategoryList
@@ -40,13 +40,35 @@ class ProductAddUpdate extends Component {
     }
   };
 
-  initOptions = (categoryList) => {
+  initOptions = async (categoryList) => {
     // categoryListを元にoptionsのデータを生成
     const options = categoryList.map((category) => ({
       value: category._id,
       label: category.name,
       isLeaf: false,
     }));
+
+    const { isUpdate, product } = this;
+    const { pCategoryId, categoryId } = product;
+    if (isUpdate && pCategoryId !== '0') {
+      // 対応する子カテゴリのデータを取得
+      const subCategories = await this.getCategories(pCategoryId);
+      // 子カテゴリのoptionsを生成
+      const childOptions = subCategories.map((category) => {
+        return {
+          value: category._id,
+          label: category.name,
+          isLeaf: true,
+        };
+      });
+      // 該当商品のトップカテゴリを取得
+      const targetOption = options.find((option) => {
+        return option.value === pCategoryId;
+      });
+
+      // 該当商品のトップカテゴリーに関連づけを行う
+      targetOption.children = childOptions;
+    }
 
     this.setState({ options });
   };
@@ -59,15 +81,17 @@ class ProductAddUpdate extends Component {
     if (value * 1 > 0) {
       callback();
     } else {
-      callback("値段は０以上の数値で入力してください");
+      callback('値段は０以上の数値で入力してください');
     }
   };
 
   submit = () => {
     // Formのバリデーションを実行して、OKだったらリクエストを送信する
     this.props.form.validateFields((error, values) => {
+      console.log(values);
+
       if (!error) {
-        alert("send ajax request");
+        alert('send ajax request');
       }
     });
   };
@@ -106,10 +130,36 @@ class ProductAddUpdate extends Component {
   };
 
   componentDidMount() {
-    this.getCategories("0");
+    this.getCategories('0');
+  }
+
+  componentWillMount() {
+    // ルートから送られてくるデータを取得
+    const product = this.props.location.state;
+    this.isUpdate = !!product; //!!は強制的にBooleanに変換
+    // 商品の情報を保存、undefined防止のため、データがない場合は空のオブジェクトを付与
+    this.product = product || {};
   }
 
   render() {
+    const { getFieldDecorator } = this.props.form;
+    const { product } = this;
+    const { pCategoryId, categoryId } = product;
+
+    // カスケード選択ボックスのデータを受け取るリスト
+    const categoryIds = [];
+    if (this.isUpdate) {
+      // トップカテゴリの商品
+
+      if (pCategoryId === '0') {
+        categoryIds.push(categoryId);
+      } else {
+        // 子カテゴリの商品
+        categoryIds.push(pCategoryId);
+        categoryIds.push(categoryId);
+      }
+    }
+
     // ItemのLayoutを設定
     const formItemLayout = {
       labelCol: { span: 3 }, //左のラベルの幅が6
@@ -118,39 +168,50 @@ class ProductAddUpdate extends Component {
 
     const title = (
       <span>
-        <Button type="link">
+        <Button type="link" onClick={() => this.props.history.goBack()}>
           <Icon type="arrow-left"></Icon>
         </Button>
-        <span>商品を追加</span>
+        <span>{this.isUpdate ? '商品を追加' : '商品を編集'}</span>
       </span>
     );
-
-    const { getFieldDecorator } = this.props.form;
 
     return (
       <Card title={title}>
         {/* Formの中でonSubmitを定義していたのなら、prevent defaultをわすれずに */}
         <Form {...formItemLayout}>
           <Item label="商品名">
-            {getFieldDecorator("name", {
-              initialValue: "",
-              rules: [{ required: true, message: "商品名を入力してださい" }],
+            {getFieldDecorator('name', {
+              initialValue: product.name,
+              rules: [{ required: true, message: '商品名を入力してださい' }],
             })(<Input placeholder="商品名を入力してください"></Input>)}
           </Item>
           <Item label="商品の説明">
-            {getFieldDecorator("desc", {
-              initialValue: "",
-              rules: [{ required: true, message: "商品の説明を入力してださい" }],
+            {getFieldDecorator('desc', {
+              initialValue: product.desc,
+              rules: [{ required: true, message: '商品の説明を入力してださい' }],
             })(<TextArea autoSize={{ minRows: 2 }}></TextArea>)}
           </Item>
           <Item label="商品の値段">
-            {getFieldDecorator("price", {
-              initialValue: "",
-              rules: [{ required: true, message: "値段を入力してださい" }, { validator: this.validatePrice }],
+            {getFieldDecorator('price', {
+              initialValue: product.price,
+              rules: [
+                { required: true, message: '値段を入力してださい' },
+                { validator: this.validatePrice },
+              ],
             })(<Input type="number" addonAfter="JPY"></Input>)}
           </Item>
           <Item label="カテゴリー">
-            <Cascader options={this.state.options} /** 表示するカテゴリーリスト */ loadData={this.loadData} />
+            {getFieldDecorator('categoryIds', {
+              initialValue: categoryIds,
+              rules: [{ required: true, message: 'カテゴリーを選択してください' }],
+            })(
+              <Cascader
+                options={this.state.options}
+                placeholder='カテゴリーを選択してください'
+                /** 表示するカテゴリーリスト */
+                loadData={this.loadData}
+              />,
+            )}
           </Item>
           <Item label="商品の詳細">
             <div>商品の詳細</div>
