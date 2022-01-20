@@ -117,3 +117,7 @@ export const reqCategory = (categoryId) => {
 export const reqUpdateProductStatus = (productId, status) => {
   return ajax('/manage/product/updateStatus', { productId, status }, 'POST');
 };
+
+export const reqDeleteImage = (name) => {
+  return ajax('/manage/img/delete', { name }, 'POST');
+};

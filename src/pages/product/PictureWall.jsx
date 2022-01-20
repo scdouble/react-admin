@@ -1,5 +1,6 @@
 import React from 'react';
 import { Upload, Icon, Modal, message } from 'antd';
+import { reqDeleteImage } from '../../api';
 
 /**
  * 画像をUploadするコンポーネント
@@ -28,6 +29,16 @@ class PicturesWall extends React.Component {
     ],
   };
 
+  /**
+   * アップロードしたファイル名のリストを取得する
+   * @returns filename list
+   */
+  getImgs = () => {
+    return this.state.fileList.map((file) => {
+      return file.name;
+    });
+  };
+
   handleCancel = () => this.setState({ previewVisible: false });
 
   handlePreview = async (file) => {
@@ -46,7 +57,7 @@ class PicturesWall extends React.Component {
    * fileList:すでにアップロードしたファイルのリスト
    * @param {*} param0
    */
-  handleChange = ({ file, fileList }) => {
+  handleChange = async ({ file, fileList }) => {
     // console.log('handleChange()', file, fileList.length, file);
 
     // アップロードが成功した際、Uploadしたファイルの情報を修正（name, url）
@@ -60,6 +71,14 @@ class PicturesWall extends React.Component {
         file.url = url;
       } else {
         message.error('ファイルアップロードが失敗しました');
+      }
+    } else if (file.status === 'removed') {
+      //画像を消す
+      const result = await reqDeleteImage(file.name);
+      if (result.status === 0) {
+        message.success('ファイルを削除しました');
+      } else {
+        message.error('ファイル削除が失敗しました');
       }
     }
     //ファイルの操作（アップロード、削除)中にStateを更新

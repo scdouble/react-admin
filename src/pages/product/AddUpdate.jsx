@@ -24,6 +24,12 @@ class ProductAddUpdate extends Component {
     options: [],
   };
 
+  constructor(props) {
+    super(props);
+    // refのタグのコンテナを保管する
+    this.pw = React.createRef();
+  }
+
   // 非同期でトップレベルのカテゴリーもしくは子カテゴリーのデータを取得して表示
   // async関数のReturn値はPromise, promiseの結果と値はasync関数の実行結果によって決まる
   getCategories = async (parentId) => {
@@ -89,9 +95,11 @@ class ProductAddUpdate extends Component {
   submit = () => {
     // Formのバリデーションを実行して、OKだったらリクエストを送信する
     this.props.form.validateFields((error, values) => {
-      console.log(values);
-
       if (!error) {
+        console.log('submit()', values);
+        const imgs = this.pw.current.getImgs();
+        console.log("imgs",imgs);
+
         alert('send ajax request');
       }
     });
@@ -215,7 +223,7 @@ class ProductAddUpdate extends Component {
             )}
           </Item>
           <Item label="商品の画像">
-            <PicturesWall />
+            <PicturesWall ref={this.pw} />
           </Item>
           <Item label="商品の詳細">
             <div>商品の詳細</div>
@@ -232,3 +240,8 @@ class ProductAddUpdate extends Component {
 }
 
 export default Form.create()(ProductAddUpdate);
+
+/**
+ * １。　子コンポーネントが親コンポーネントの関数を実行する：親の関数をpropsとして子に渡す
+ * ２。親コンポーネントが子コンポーネントの関数を実行する：親コンポーネントの中でRefを通して子コンポーネントを獲得して、子コンポーネントの方法を実行する
+ */
