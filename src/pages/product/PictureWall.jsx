@@ -1,7 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import { Upload, Icon, Modal, message } from 'antd';
 import { reqDeleteImage } from '../../api';
-
+import { BASE_IMG_URL } from '../../utils/constants';
 /**
  * 画像をUploadするコンポーネント
  */
@@ -16,18 +18,47 @@ function getBase64(file) {
 }
 
 class PicturesWall extends React.Component {
-  state = {
-    previewVisible: false,
-    previewImage: '',
-    fileList: [
-      // {
-      //   uid: '-1',
-      //   name: 'image.png', //画像のファイル名
-      //   status: 'done', //画像のステータス
-      //   url: 'http://localhost:5001/upload/image-1642595056498.jpg',
-      // },
-    ],
+  static propTypes = {
+    imgs: PropTypes.array,
   };
+  // state = {
+  //   previewVisible: false,
+  //   previewImage: '',
+  //   fileList: [
+  //     {
+  //       uid: '-1',
+  //       name: 'image.png', //画像のファイル名
+  //       status: 'done', //画像のステータス
+  //       url: 'http://localhost:5001/upload/image-1642595056498.jpg',
+  //     },
+  //   ],
+  // };
+
+  constructor(props) {
+    super(props);
+
+    const fileList = [];
+
+    // propsからimgsを受け取ると
+    const { imgs } = this.props;
+    if (imgs && imgs.length > 0) {
+      fileList = imgs.map((img, index) => {
+        return {
+          uid: -index,
+          name: img,
+          status: 'done',
+          url: BASE_IMG_URL + img,
+        };
+      });
+    }
+
+    // 状態の初期化
+    this.state = {
+      previewVisible: false,
+      previewImage: '',
+      fileList, //  アップロードした画像のリスト
+    };
+  }
 
   /**
    * アップロードしたファイル名のリストを取得する

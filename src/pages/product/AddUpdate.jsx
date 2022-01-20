@@ -153,7 +153,7 @@ class ProductAddUpdate extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { product } = this;
-    const { pCategoryId, categoryId } = product;
+    const { pCategoryId, categoryId,imgs } = product;
 
     // カスケード選択ボックスのデータを受け取るリスト
     const categoryIds = [];
@@ -223,7 +223,7 @@ class ProductAddUpdate extends Component {
             )}
           </Item>
           <Item label="商品の画像">
-            <PicturesWall ref={this.pw} />
+            <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
           <Item label="商品の詳細">
             <div>商品の詳細</div>
