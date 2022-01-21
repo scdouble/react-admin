@@ -1,17 +1,19 @@
 import { Button, Card, message, Table } from 'antd';
 import React, { Component } from 'react';
+import { reqRoles } from '../../api';
 
-const data = [
-  {
-    _id: 1,
-    name: 'test',
-    auth_time: '123',
-    auth_name: 1,
-  },
-];
+// const data = [
+//   {
+//     _id: 1,
+//     name: 'test',
+//     auth_time: '123',
+//     auth_name: 1,
+//   },
+// ];
 export default class Role extends Component {
   state = {
     roles: [],
+    selectedRole: {}, //選択した行
   };
 
   initColumns = () => {
@@ -26,20 +28,32 @@ export default class Role extends Component {
   onRow = (role) => {
     return {
       onClick: (event) => {
-        console.log('row clicked', role);
+        this.setState({ selectedRole: role });
       },
     };
   };
+
+  getRoles = async () => {
+    const result = await reqRoles();
+    if (result.status === 0) {
+      const roles = result.data;
+      this.setState({ roles });
+    }
+  };
+
+  componentDidMount() {
+    this.getRoles();
+  }
 
   componentWillMount() {
     this.initColumns();
   }
   render() {
-    const { roles } = this.state;
+    const { roles, selectedRole } = this.state;
     const title = (
       <span>
         <Button type="primary">ロール追加</Button> &nbsp;
-        <Button type="primary" disabled>
+        <Button type="primary" disabled={!selectedRole._id}>
           権限設定
         </Button>
       </span>
@@ -49,9 +63,9 @@ export default class Role extends Component {
       <Card title={title}>
         <Table
           bordered
-          rowSelection={{ type: 'radio' }}
+          rowSelection={{ type: 'radio', selectedRowKeys: [selectedRole._id] }}
           rowKey="_id"
-          dataSource={data}
+          dataSource={roles}
           columns={this.columns}
           // onRow={(record) => {
           //   return {
