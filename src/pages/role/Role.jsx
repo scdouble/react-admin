@@ -1,6 +1,7 @@
-import { Button, Card, message, Table } from 'antd';
+import { Button, Card, message, Modal, Table } from 'antd';
 import React, { Component } from 'react';
-import { reqRoles } from '../../api';
+import { reqAddRole, reqRoles } from '../../api';
+import AddRole from './AddRole';
 
 // const data = [
 //   {
@@ -14,6 +15,8 @@ export default class Role extends Component {
   state = {
     roles: [],
     selectedRole: {}, //選択した行
+    isShowAdd: false,
+    confirmLoading: false,
   };
 
   initColumns = () => {
@@ -41,6 +44,50 @@ export default class Role extends Component {
     }
   };
 
+  addRole = () => {
+    // formバリデーション
+
+    this.form.validateFields(async (error, values) => {
+      if (!error) {
+        this.setState({ confirmLoading: true });
+        // Formのデータを収集
+        const { roleName } = values;
+        this.form.resetFields();
+        // APIで追加
+        const result = await reqAddRole(roleName);
+        if (result.status === 0) {
+          // ロールリストを表示
+          message.success('ロールの追加が成功しました');
+          // this.getRoles();
+          const role = result.data;
+          //ステートの中のRolesを更新:もとのリストをベースに更新
+          this.setState((state,props) => ({
+            roles: [...state.roles, role],
+          }));
+          // const roles = this.state.roles;
+          // const roles = [...this.state.roles]
+          // roles.push(role);
+          // this.setState({
+          //   roles,
+          // });
+
+          this.setState({ confirmLoading: false });
+
+          //モーダルを閉じる
+          this.setState({ isShowAdd: false });
+        } else {
+          message.error('ロールの追加が失敗しました');
+        }
+      }
+    });
+  };
+
+  handelCancel = () => {
+    // formに入力された値を消す
+    this.form.resetFields();
+    this.setState({ isShowAdd: false });
+  };
+
   componentDidMount() {
     this.getRoles();
   }
@@ -49,10 +96,18 @@ export default class Role extends Component {
     this.initColumns();
   }
   render() {
-    const { roles, selectedRole } = this.state;
+    const { roles, selectedRole, isShowAdd, confirmLoading } = this.state;
     const title = (
       <span>
-        <Button type="primary">ロール追加</Button> &nbsp;
+        <Button
+          type="primary"
+          onClick={() => {
+            this.setState({ isShowAdd: true });
+          }}
+        >
+          ロール追加
+        </Button>{' '}
+        &nbsp;
         <Button type="primary" disabled={!selectedRole._id}>
           権限設定
         </Button>
@@ -76,6 +131,19 @@ export default class Role extends Component {
           // }}
           onRow={this.onRow}
         ></Table>
+        <Modal
+          title="ロールを追加"
+          visible={isShowAdd}
+          onOk={this.addRole}
+          onCancel={this.handelCancel}
+          confirmLoading={confirmLoading}
+        >
+          <AddRole
+            setForm={(form) => {
+              this.form = form;
+            }}
+          />
+        </Modal>
       </Card>
     );
   }

@@ -147,3 +147,7 @@ export const reqAddOrUpdateProduct = (product) => {
 export const reqRoles = () => {
   return ajax('/manage/role/list', 'GET');
 };
+
+export const reqAddRole = (name) => {
+  return ajax('/manage/role/add', { roleName:name }, 'POST');
+};
