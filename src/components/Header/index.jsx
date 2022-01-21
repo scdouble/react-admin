@@ -39,7 +39,7 @@ class Header extends Component {
         //　子メニュの中でItem,keyとPathを比較
         // 一致する項目があればTitleに表示
         const cItem = item.children.find((cItem) => {
-          return cItem.key === path;
+          return path.indexOf(cItem.key)===0;
         });
         if (cItem) {
           title = cItem.title;

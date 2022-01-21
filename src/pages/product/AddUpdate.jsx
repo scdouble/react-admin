@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Card, Form, Input, Select, Cascader, Upload, Button, Icon } from 'antd';
+import { Card, Form, Input, Select, Cascader, Upload, Button, Icon, message } from 'antd';
 import { reqCategoryList } from '../../api';
 import PicturesWall from './PictureWall';
+import RichTextEditor from './RichTextEditor';
+import { reqAddOrUpdateProduct } from '../../api';
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -28,6 +30,7 @@ class ProductAddUpdate extends Component {
     super(props);
     // refのタグのコンテナを保管する
     this.pw = React.createRef();
+    this.editor = React.createRef();
   }
 
   // 非同期でトップレベルのカテゴリーもしくは子カテゴリーのデータを取得して表示
@@ -94,13 +97,44 @@ class ProductAddUpdate extends Component {
 
   submit = () => {
     // Formのバリデーションを実行して、OKだったらリクエストを送信する
-    this.props.form.validateFields((error, values) => {
+    this.props.form.validateFields(async (error, values) => {
       if (!error) {
-        console.log('submit()', values);
+        // formのデータを収集 Productオブジェクトにする
+        const { name, desc, price, categoryIds } = values;
+        let pCategoryId, categoryId;
+        if (categoryIds.length === 1) {
+          pCategoryId = '0';
+          categoryId = categoryIds[0];
+        } else {
+          pCategoryId = categoryIds[0];
+          categoryId = categoryIds[1];
+        }
         const imgs = this.pw.current.getImgs();
-        console.log("imgs",imgs);
+        const detail = this.editor.current.getDetail();
 
-        alert('send ajax request');
+        const product = { name, desc, price, imgs, detail,pCategoryId,categoryId };
+
+        // 商品の更新であれば、IDを追加
+        if (this.isUpdate) {
+          product._id = this.product._id;
+        }
+        // APIをリクエストして、商品を追加もしくは更新
+        const result = await reqAddOrUpdateProduct(product);
+
+        if (result.status === 0) {
+          message.success(`商品の${this.isUpdate ? '更新' : '追加'}が完了しました`);
+          this.props.history.goBack();
+        } else {
+          message.error(`商品の${this.isUpdate ? '更新' : '追加'}が失敗しました`);
+        }
+        // リクエスト結果によってメッセージ表示
+        console.log('submit()', values);
+        // const imgs = this.pw.current.getImgs();
+        // const detail = this.editor.current.getDetail();
+        // console.log('imgs', imgs);
+        // console.log('details', detail);
+
+        // alert('send ajax request');
       }
     });
   };
@@ -153,7 +187,7 @@ class ProductAddUpdate extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { product } = this;
-    const { pCategoryId, categoryId,imgs } = product;
+    const { pCategoryId, categoryId, imgs, detail } = product;
 
     // カスケード選択ボックスのデータを受け取るリスト
     const categoryIds = [];
@@ -225,8 +259,8 @@ class ProductAddUpdate extends Component {
           <Item label="商品の画像">
             <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
-          <Item label="商品の詳細">
-            <div>商品の詳細</div>
+          <Item label="商品の詳細" labelCol={{ span: 3 }} wrapperCol={{ span: 20 }}>
+            <RichTextEditor ref={this.editor} detail={detail} />
           </Item>
           <Item>
             <Button type="primary" onClick={this.submit}>

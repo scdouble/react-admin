@@ -1,13 +1,13 @@
-import React, { Component } from "react";
-import { Button, Card, Icon, List } from "antd";
-import { BASE_IMG_URL } from "../../utils/constants";
-import { reqCategory } from "../../api";
+import React, { Component } from 'react';
+import { Button, Card, Icon, List } from 'antd';
+import { BASE_IMG_URL } from '../../utils/constants';
+import { reqCategory } from '../../api';
 const Item = List.Item;
 //プロダクトの詳細の子コンポーネント
 export default class ProductDetail extends Component {
   state = {
-    cName1: "", //親カテゴリの名前
-    cName2: "", //子カテゴリの名前
+    cName1: '', //親カテゴリの名前
+    cName2: '', //子カテゴリの名前
   };
 
   async componentDidMount() {
@@ -15,7 +15,7 @@ export default class ProductDetail extends Component {
     // 表示している商品のCateoryIDを取得
     const { pCategoryId, categoryId } = this.props.location.state.record;
 
-    if (pCategoryId === "0") {
+    if (pCategoryId === '0') {
       //親カテゴリの名前を問い合わせる
       const result = await reqCategory(categoryId);
       const cName1 = result.data.name;
@@ -71,7 +71,7 @@ export default class ProductDetail extends Component {
           <Item>
             <span className="left">カテゴリー:</span>
             <span>
-              {cName1} {cName2 ? "-->" + cName2 : null}
+              {cName1} {cName2 ? '-->' + cName2 : null}
             </span>
           </Item>
           <Item>

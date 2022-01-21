@@ -36,7 +36,7 @@ class Admin extends Component {
       return <Redirect to="/login" />;
     }
     return (
-      <Layout style={{ height: '100%', width: '100%', minHeight: '100vh' }}>
+      <Layout style={{ minHeight: '100%', width: '100%'}}>
         <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
           <LeftNav showTitle={this.state.collapsed} />
         </Sider>

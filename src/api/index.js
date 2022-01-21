@@ -118,6 +118,28 @@ export const reqUpdateProductStatus = (productId, status) => {
   return ajax('/manage/product/updateStatus', { productId, status }, 'POST');
 };
 
+/**
+ * 指定したファイル名のImgを削除
+ * @param {string} name
+ * @returns
+ */
 export const reqDeleteImage = (name) => {
   return ajax('/manage/img/delete', { name }, 'POST');
+};
+
+// export const reqAddProduct = (product) => {
+//   return ajax('/manage/product/add', product, 'POST');
+// };
+
+// export const reqUpdateProduct = (product) => {
+//   return ajax('/manage/product/update', product, 'POST');
+// };
+
+/**
+ *
+ * @param {object} product
+ * @returns
+ */
+export const reqAddOrUpdateProduct = (product) => {
+  return ajax('/manage/product/' + (product._id ? 'update' : 'add'), product, 'POST');
 };
