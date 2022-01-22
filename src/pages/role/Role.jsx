@@ -1,8 +1,10 @@
-import { Button, Card, message, Modal, Table } from 'antd';
 import React, { Component } from 'react';
-import { reqAddRole, reqRoles } from '../../api';
+import { reqAddRole, reqRoles, reqUpdateRole } from '../../api';
+import { Button, Card, message, Modal, Table } from 'antd';
 import AddRole from './AddRole';
-
+import AuthForm from './AuthForm';
+import memoryUtils from '../../utils/memoryUtils';
+import { formateDate } from '../../utils/dateUtils';
 // const data = [
 //   {
 //     _id: 1,
@@ -12,18 +14,31 @@ import AddRole from './AddRole';
 //   },
 // ];
 export default class Role extends Component {
-  state = {
-    roles: [],
-    selectedRole: {}, //選択した行
-    isShowAdd: false,
-    confirmLoading: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.auth = React.createRef();
+    this.state = {
+      roles: [],
+      selectedRole: {}, //選択した行
+      isShowAdd: false,
+      confirmLoading: false,
+      isShowAuth: false,
+    };
+  }
 
   initColumns = () => {
     this.columns = [
       { title: 'ロール名', dataIndex: 'name' },
-      { title: '作成日', dataIndex: 'create_time' },
-      { title: '権限設定日', dataIndex: 'auth_time' },
+      {
+        title: '作成日', dataIndex: 'create_time',
+        render: (create_time) => formateDate(create_time),
+      },
+      {
+        title: '権限設定日', dataIndex: 'auth_time',
+        render: formateDate,
+
+      },
       { title: '権限設定者', dataIndex: 'auth_name' },
     ];
   };
@@ -31,6 +46,7 @@ export default class Role extends Component {
   onRow = (role) => {
     return {
       onClick: (event) => {
+        console.log('clicked', role);
         this.setState({ selectedRole: role });
       },
     };
@@ -61,7 +77,7 @@ export default class Role extends Component {
           // this.getRoles();
           const role = result.data;
           //ステートの中のRolesを更新:もとのリストをベースに更新
-          this.setState((state,props) => ({
+          this.setState((state, props) => ({
             roles: [...state.roles, role],
           }));
           // const roles = this.state.roles;
@@ -82,6 +98,28 @@ export default class Role extends Component {
     });
   };
 
+  updateRole = async () => {
+    const role = this.state.selectedRole;
+    // 最新のmenus
+    role.menus = this.auth.current.getMenus();
+    role.auth_time = Date.now();
+    role.auth_name = memoryUtils.user.username;
+    // APIに更新リクエスト
+    const result = await reqUpdateRole(role);
+    if (result.status === 0) {
+      message.success('権限の設定が完了しました');
+      // this.getRoles()
+
+      this.setState({
+        roles: [...this.state.roles],
+      });
+      this.setState({
+        isShowAuth: false,
+      });
+    } else {
+    }
+  };
+
   handelCancel = () => {
     // formに入力された値を消す
     this.form.resetFields();
@@ -95,20 +133,27 @@ export default class Role extends Component {
   componentWillMount() {
     this.initColumns();
   }
+
   render() {
-    const { roles, selectedRole, isShowAdd, confirmLoading } = this.state;
+    const { roles, selectedRole, isShowAdd, isShowAuth, confirmLoading } = this.state;
     const title = (
       <span>
         <Button
-          type="primary"
+          type='primary'
           onClick={() => {
             this.setState({ isShowAdd: true });
           }}
         >
           ロール追加
-        </Button>{' '}
+        </Button>
         &nbsp;
-        <Button type="primary" disabled={!selectedRole._id}>
+        <Button
+          type='primary'
+          disabled={!selectedRole._id}
+          onClick={() => {
+            this.setState({ isShowAuth: true });
+          }}
+        >
           権限設定
         </Button>
       </span>
@@ -119,7 +164,7 @@ export default class Role extends Component {
         <Table
           bordered
           rowSelection={{ type: 'radio', selectedRowKeys: [selectedRole._id] }}
-          rowKey="_id"
+          rowKey='_id'
           dataSource={roles}
           columns={this.columns}
           // onRow={(record) => {
@@ -130,9 +175,9 @@ export default class Role extends Component {
           //   };
           // }}
           onRow={this.onRow}
-        ></Table>
+        />
         <Modal
-          title="ロールを追加"
+          title='ロールを追加'
           visible={isShowAdd}
           onOk={this.addRole}
           onCancel={this.handelCancel}
@@ -143,6 +188,18 @@ export default class Role extends Component {
               this.form = form;
             }}
           />
+        </Modal>
+
+        <Modal
+          title='権限設定'
+          visible={isShowAuth}
+          onOk={this.updateRole}
+          onCancel={() => {
+            this.setState({ isShowAuth: false });
+          }}
+          confirmLoading={confirmLoading}
+        >
+          <AuthForm ref={this.auth} role={selectedRole} />
         </Modal>
       </Card>
     );

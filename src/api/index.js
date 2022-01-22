@@ -149,5 +149,25 @@ export const reqRoles = () => {
 };
 
 export const reqAddRole = (name) => {
-  return ajax('/manage/role/add', { roleName:name }, 'POST');
+  return ajax('/manage/role/add', { roleName: name }, 'POST');
+};
+
+export const reqUpdateRole = (role) => {
+  return ajax('/manage/role/update', role, 'POST');
+};
+
+/**
+ * ユーザのリストを取得する
+ * @returns {*}
+ */
+export const reqUsers = () => {
+  return ajax('/manage/user/list', 'GET');
+};
+
+/**
+ * ユーザを削除する
+ * @returns {*}
+ */
+export const reqDeleteUser = (userId) => {
+  return ajax('/manage/user/delete', { userId: userId }, 'POST');
 };
