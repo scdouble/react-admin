@@ -23,10 +23,6 @@ export const reqLogin = (username, password) =>
     },
     'POST',
   );
-
-// ユーザ追加
-export const reqAddUser = (userObj) => ajax('/manage/user/add', userObj, 'POST');
-
 /**
  * dark sky APIから天気情報を取得する
  * @param {*} longitude
@@ -170,4 +166,29 @@ export const reqUsers = () => {
  */
 export const reqDeleteUser = (userId) => {
   return ajax('/manage/user/delete', { userId: userId }, 'POST');
+};
+
+// /**
+//  * ユーザを追加する
+//  * @returns {*}
+//  */
+// export const reqAddUser = (user) => {
+//   return ajax('/manage/user/add', user, 'POST');
+// };
+//
+// /**
+//  * ユーザを更新する
+//  * @returns {*}
+//  */
+// export const reqUpdateUser = (user) => {
+//   return ajax('/manage/user/update', user, 'POST');
+// };
+
+/**
+ * ユーザの追加もしくは更新
+ * @param user
+ * @returns {*}
+ */
+export const reqAddOrUpdateUser = (user) => {
+  return ajax('/manage/user/' + (user._id ? 'update' : 'add'), user, 'POST');
 };

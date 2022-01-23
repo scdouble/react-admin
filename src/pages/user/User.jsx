@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Card, message, Modal, Table } from 'antd';
 import { formateDate } from '../../utils/dateUtils';
 import { PAGE_SIZE } from '../../utils/constants';
-import { reqDeleteUser, reqUsers } from '../../api';
+import { reqAddOrUpdateUser, reqDeleteUser, reqUsers } from '../../api';
 import UserForm from './UserForm';
 
 export default class User extends Component {
@@ -26,8 +26,10 @@ export default class User extends Component {
         render: (userRecord) => {
           return (
             <span>
-              <Button>編集</Button>
-              <Button onClick={() => {
+              <Button type={"link"} onClick={() => {
+                return this.showUpdate(userRecord);
+              }}>編集</Button>
+              <Button type={"link"} onClick={() => {
                 return this.deleteUser(userRecord);
               }}>削除</Button>
             </span>
@@ -36,6 +38,17 @@ export default class User extends Component {
       },
     ];
   };
+
+  showAdd = () => {
+    this.user = null;
+    this.setState({ isShow: true });
+  };
+
+  showUpdate = (user) => {
+    this.user = user;// userを保存
+    this.setState({ isShow: true });
+  };
+
 
   /**
    * 指定したユーザを削除
@@ -70,7 +83,28 @@ export default class User extends Component {
     this.roleNames = roleNames;
   };
 
-  addOrUpdateUser = () => {
+  /**
+   * ユーザの追加もしくは削除
+   * @returns {Promise<void>}
+   */
+  addOrUpdateUser = async () => {
+    this.setState({ isShow: false });
+
+    //更新があればuserに_idを追加
+    if (this.user) {
+      user._id = this.user_id;
+    }
+    // Formデータ収集
+    const user = this.form.getFieldsValue();
+    this.form.resetFields();
+    // APIにリクエスト
+    const result = await reqAddOrUpdateUser(user);
+    if (result.status === 0) {
+      message.success(`ユーザの${this.user ? '編集' : '追加'}が完了しました`);
+      this.getUsers();
+    }
+
+
   };
 
   getUsers = async () => {
@@ -91,11 +125,12 @@ export default class User extends Component {
   }
 
   render() {
-    const { users, isShow } = this.state;
+    const { users, isShow, roles } = this.state;
+    const user = this.user;
     const title =
       <Button
         type='primary'
-        onClick={() => this.setState({ isShow: true })}
+        onClick={this.showAdd}
       >
         ユーザ追加
       </Button>;
@@ -110,16 +145,20 @@ export default class User extends Component {
           pagination={{ defaultPageSize: PAGE_SIZE }}
         />
         <Modal
-          title='ユーザ追加'
+          title={user ? 'ユーザ編集' : 'ユーザ追加'}
           visible={isShow}
           onOk={this.addOrUpdateUser}
           onCancel={() => {
-            this.setState({ isShow: false });
+            this.setState({ isShow: false })
+            this.form.resetFields()
           }}
         >
-          <UserForm setForm={(form) => {
-            this.form = form;
-          }} />
+          <UserForm
+            setForm={(form) => {
+              this.form = form;
+            }}
+            user={user}
+            roles={roles} />
         </Modal>
       </Card>
     );

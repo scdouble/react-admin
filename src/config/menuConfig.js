@@ -3,6 +3,7 @@ const menuList = [
     title: 'ホーム',
     icon: 'home',
     key: '/home',
+    isPublic: true //全ユーザが見れる
   },
   {
     title: 'プロダクト',

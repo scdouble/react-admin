@@ -10,7 +10,10 @@ const { Item } = Form;
  */
 class UserForm extends PureComponent {
   static propTypes = {
-    setForm: PropTypes.func.isRequired, //親コンポーネントのID
+    setForm: PropTypes.func.isRequired,
+    roles: PropTypes.array.isRequired,
+    user: PropTypes.object,
+
   };
 
   componentDidMount() {
@@ -20,7 +23,8 @@ class UserForm extends PureComponent {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-
+    const { roles } = this.props;
+    const user = this.props.user || {};
     const formItemLayout = {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
@@ -30,30 +34,37 @@ class UserForm extends PureComponent {
       <Form {...formItemLayout}>
         <Item label='ユーザネーム'>
           {getFieldDecorator('username', {
+            initialValue: user.username,
             rules: [{ required: true, message: 'ユーザネームを入力してください' }],
           })(<Input placeholder='ユーザネームを入力してください' />)}
         </Item>
-        <Item label='パスワード'>
+        {user._id ? null : <Item label='パスワード'>
           {getFieldDecorator('password', {
+            initialValue: user.password,
             rules: [{ required: true, message: 'passwordを入力してください' }],
           })(<Input type='password' placeholder='passwordを入力してください' />)}
-        </Item>
+        </Item>}
         <Item label='メールアドレス'>
           {getFieldDecorator('email', {
+            initialValue: user.email,
             rules: [{ required: true, message: 'emailを入力してください' }],
           })(<Input placeholder='emailを入力してください' />)}
         </Item>
         <Item label='ロール'>
           {getFieldDecorator('role_id', {
-            initialValue: '2',
+            initialValue: user.role_id,
             rules: [{ required: true, message: 'ロールを選択してください' }],
-          })(<Select>
-            <Select.Option value='1'>
-              a
-            </Select.Option>
-            <Select.Option value='2'>
-              b
-            </Select.Option>
+          })(<Select placeholder='ロールを選択してください'>
+            {
+              roles.map((role) => {
+                return (
+                  <Select.Option key={role._id} value={role._id}>
+                    {role.name}
+                  </Select.Option>
+                );
+
+              })
+            }
           </Select>)}
         </Item>
       </Form>

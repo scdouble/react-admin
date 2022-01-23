@@ -5,6 +5,7 @@ import AddRole from './AddRole';
 import AuthForm from './AuthForm';
 import memoryUtils from '../../utils/memoryUtils';
 import { formateDate } from '../../utils/dateUtils';
+import storageUtils from '../../utils/storageUtils';
 // const data = [
 //   {
 //     _id: 1,
@@ -107,16 +108,27 @@ export default class Role extends Component {
     // APIに更新リクエスト
     const result = await reqUpdateRole(role);
     if (result.status === 0) {
-      message.success('権限の設定が完了しました');
       // this.getRoles()
+// 現在更新したRoleが自分が所属しているRoleなら再度ログインさせる
+      if (role._id === memoryUtils.user.role_id) {
+        memoryUtils.user = {};
+        storageUtils.removeUser();
+        this.props.history.replace('/login');
+        message.info('ロールの権限が変更になりました。再度ログインしてください');
+      } else {
+        message.success('権限の設定が完了しました');
 
-      this.setState({
-        roles: [...this.state.roles],
-      });
-      this.setState({
-        isShowAuth: false,
-      });
+        this.setState({
+          roles: [...this.state.roles],
+        });
+        this.setState({
+          isShowAuth: false,
+        });
+      }
+
     } else {
+      message.error('権限の設定が失敗しました');
+
     }
   };
 
@@ -163,7 +175,13 @@ export default class Role extends Component {
       <Card title={title}>
         <Table
           bordered
-          rowSelection={{ type: 'radio', selectedRowKeys: [selectedRole._id] }}
+          rowSelection={{
+            type: 'radio',
+            selectedRowKeys: [selectedRole._id],
+            onSelect: (role) => {
+              this.setState({ selectedRole: role });
+            },
+          }}
           rowKey='_id'
           dataSource={roles}
           columns={this.columns}
