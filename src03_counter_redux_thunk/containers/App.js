@@ -9,7 +9,9 @@ import { increment, decrement, incrementAsync} from '../redux/actions';
 // コンテナコンポーネントはUIコンポーネントに特定の属性を伝える
 
 // reduxの中のStateをUIコンポーネントの一般的なPropsにマッピングする
-
+/**
+ * @param  {} state
+ */
 
 // function mapStateToProps(state) {
 //   return {
@@ -17,9 +19,12 @@ import { increment, decrement, incrementAsync} from '../redux/actions';
 //   };
 // }
 
-const mapStateToProps = (state) => ({ count: state.count });
+const mapStateToProps = (state) => ({ count: state });
 
 // dispatchが含まれているコードをUIコンポーネントの関数Propsにマッピングする
+/**
+ * @param  {} dispatch
+ */
 
 // function mapDispatchToProps(dispatch) {
 //   return {
@@ -39,4 +44,4 @@ const mapStateToProps = (state) => ({ count: state.count });
 // };
 
 // export default connect(mapStateToProps, mapDispatchToProps)(Counter);
-export default connect((state) => ({ count: state.count }), { increment, decrement, incrementAsync})(Counter);
+export default connect((state) => ({ count: state }), { increment, decrement, incrementAsync})(Counter);
