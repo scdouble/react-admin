@@ -9,6 +9,7 @@ import ajax from './ajax';
 //   return ajax("/login", { username, password }, 'POST')
 // }
 
+const BASE = '/api';
 // Login
 /***
  *
@@ -16,7 +17,7 @@ import ajax from './ajax';
  */
 export const reqLogin = (username, password) =>
   ajax(
-    '/login',
+    BASE + '/login',
     {
       username,
       password,
@@ -52,7 +53,7 @@ export const reqWeather = (longitude, latitude) => {
  * @returns {Promise} Promiseオブジェクト
  */
 export const reqCategoryList = (parentId) =>
-  ajax('/manage/category/list', { parentId: parentId }, 'GET');
+  ajax(BASE + '/manage/category/list', { parentId: parentId }, 'GET');
 
 /**
  * カテゴリーを追加する
@@ -62,7 +63,7 @@ export const reqCategoryList = (parentId) =>
  */
 export const reqAddCategory = (parentId, categoryName) =>
   ajax(
-    '/manage/category/add',
+    BASE + '/manage/category/add',
     {
       parentId: parentId,
       categoryName: categoryName,
@@ -77,7 +78,7 @@ export const reqAddCategory = (parentId, categoryName) =>
  */
 export const reqUpdateCategory = ({ categoryId, categoryName }) =>
   ajax(
-    '/manage/category/update',
+    BASE + '/manage/category/update',
     {
       categoryId: categoryId,
       categoryName: categoryName,
@@ -86,7 +87,7 @@ export const reqUpdateCategory = ({ categoryId, categoryName }) =>
   );
 
 export const reqProducts = (pageNum, pageSize) =>
-  ajax('/manage/product/list', { pageNum, pageSize }, 'GET');
+  ajax(BASE + '/manage/product/list', { pageNum, pageSize }, 'GET');
 
 /**
  * 商品検索
@@ -96,7 +97,7 @@ export const reqProducts = (pageNum, pageSize) =>
  */
 export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType }) =>
   ajax(
-    '/manage/product/search',
+    BASE + '/manage/product/search',
     {
       pageSize,
       pageNum,
@@ -106,12 +107,12 @@ export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType })
   );
 
 export const reqCategory = (categoryId) => {
-  return ajax('/manage/category/info', { categoryId }, 'GET');
+  return ajax(BASE + '/manage/category/info', { categoryId }, 'GET');
 };
 
 // 商品のステータスを更新する
 export const reqUpdateProductStatus = (productId, status) => {
-  return ajax('/manage/product/updateStatus', { productId, status }, 'POST');
+  return ajax(BASE + '/manage/product/updateStatus', { productId, status }, 'POST');
 };
 
 /**
@@ -120,7 +121,7 @@ export const reqUpdateProductStatus = (productId, status) => {
  * @returns
  */
 export const reqDeleteImage = (name) => {
-  return ajax('/manage/img/delete', { name }, 'POST');
+  return ajax(BASE + '/manage/img/delete', { name }, 'POST');
 };
 
 // export const reqAddProduct = (product) => {
@@ -137,19 +138,19 @@ export const reqDeleteImage = (name) => {
  * @returns
  */
 export const reqAddOrUpdateProduct = (product) => {
-  return ajax('/manage/product/' + (product._id ? 'update' : 'add'), product, 'POST');
+  return ajax(BASE + '/manage/product/' + (product._id ? 'update' : 'add'), product, 'POST');
 };
 
 export const reqRoles = () => {
-  return ajax('/manage/role/list', 'GET');
+  return ajax(BASE + '/manage/role/list', 'GET');
 };
 
 export const reqAddRole = (name) => {
-  return ajax('/manage/role/add', { roleName: name }, 'POST');
+  return ajax(BASE + '/manage/role/add', { roleName: name }, 'POST');
 };
 
 export const reqUpdateRole = (role) => {
-  return ajax('/manage/role/update', role, 'POST');
+  return ajax(BASE + '/manage/role/update', role, 'POST');
 };
 
 /**
@@ -157,7 +158,7 @@ export const reqUpdateRole = (role) => {
  * @returns {*}
  */
 export const reqUsers = () => {
-  return ajax('/manage/user/list', 'GET');
+  return ajax(BASE + '/manage/user/list', 'GET');
 };
 
 /**
@@ -165,7 +166,7 @@ export const reqUsers = () => {
  * @returns {*}
  */
 export const reqDeleteUser = (userId) => {
-  return ajax('/manage/user/delete', { userId: userId }, 'POST');
+  return ajax(BASE + '/manage/user/delete', { userId: userId }, 'POST');
 };
 
 // /**
@@ -190,5 +191,5 @@ export const reqDeleteUser = (userId) => {
  * @returns {*}
  */
 export const reqAddOrUpdateUser = (user) => {
-  return ajax('/manage/user/' + (user._id ? 'update' : 'add'), user, 'POST');
+  return ajax(BASE + '/manage/user/' + (user._id ? 'update' : 'add'), user, 'POST');
 };
