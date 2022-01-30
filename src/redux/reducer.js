@@ -1,32 +1,36 @@
-/**
- * reducerの関数のモジュール：現在のStateと指定したアクションをもとに新しいStateを返す
- */
-import { DECREMENT, INCREMENT } from './action-types';
-import {combineReducers} from '../lib/redux';
+import { combineReducers } from 'redux';
+import storageUtils from '../utils/storageUtils';
+import { RECEIVE_USR, RESET_USER, SET_HEAD_TITLE, SHOW_ERROR_MSG } from './action-types';
 
-/**
- * countの状態と管理する
- */
-function count(state = 0, action) {
-  console.log('count()', state, action);
+const initTitle = 'ホーム';
+
+function headTitle(state = initTitle, action) {
   switch (action.type) {
-    case INCREMENT:
-      return state + action.data;
-    case DECREMENT:
-      return state - action.data;
+    case SET_HEAD_TITLE:
+      return action.data;
     default:
       return state;
   }
 }
 
-function user(state = {}, action) {
+const initUser = storageUtils.getUser();
+
+function user(state = initUser, action) {
   switch (action.type) {
+    case RECEIVE_USR:
+      return action.user;
+    case SHOW_ERROR_MSG:
+      const errorMsg = action.errorMsg;
+      // state.errorMsg = errorMsg // 元のStateを直接修正しない
+      return { ...state, errorMsg };
+    case RESET_USER:
+      return {}
     default:
       return state;
   }
 }
 
 export default combineReducers({
-  count,
-  user
-})
+  headTitle,
+  user,
+});

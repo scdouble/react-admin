@@ -1,9 +1,17 @@
+/*
+ * エントリーJSファイル
+ * */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from './lib/react-redux/index';
-import App from './containers/App';
+import store from './redux/store'
+import { Provider } from 'react-redux';
+import storageUtils from './utils/storageUtils';
+import memoryUtils from './utils/memoryUtils';
+import App from './App';
 
-import store from './redux/store';
+// local storageの中Userを取得して、メモリに保存する
+// const user = storageUtils.getUser();
+// memoryUtils.user = user;
 
 ReactDOM.render(
   <Provider store={store}>
@@ -11,11 +19,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
-
-// //storeに	Stateを監視する
-// store.subscribe(()=>{
-//   //storeの中の状態が変化したときに自動で実施
-//   // appを再度レンダリングする
-//   ReactDOM.render(<App store={store}/>, document.getElementById('root'));
-
-// })
