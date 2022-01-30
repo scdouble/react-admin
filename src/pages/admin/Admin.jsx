@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
-
-import memoryUtils from '../../utils/memoryUtils';
 import LeftNav from '../../components/LeftNav';
 import Header from '../../components/Header';
+import NotFound from '../not-found/NotFound';
 
 import Home from '../home/Home';
 import Product from '../product/Product';
@@ -29,19 +28,19 @@ class Admin extends Component {
   };
 
   render() {
-    console.log("Admin::render");
+    console.log('Admin::render');
     // const user = memoryUtils.user;
 
-    const {user} = this.props
+    const { user } = this.props;
 
     // メモリにログインのユーザデータがなければ
     if (!user || !user._id) {
       // loginに遷移
-      console.log("go to /login");
-      return <Redirect to="/login" />;
+      console.log('go to /login');
+      return <Redirect to='/login' />;
     }
     return (
-      <Layout style={{ minHeight: '100%', width: '100%'}}>
+      <Layout style={{ minHeight: '100%', width: '100%' }}>
         <Sider collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
           <LeftNav showTitle={this.state.collapsed} />
         </Sider>
@@ -49,15 +48,16 @@ class Admin extends Component {
           <Header> Header </Header>
           <Content style={{ backgroundColor: 'white', margin: '20px' }}>
             <Switch>
-              <Route path="/product" component={Product} />
-              <Route path="/category" component={Category} />
-              <Route path="/user" component={User} />
-              <Route path="/role" component={Role} />
-              <Route path="/home" component={Home} />
-              <Route path="/charts/pie" component={Pie} />
-              <Route path="/charts/bar" component={Bar} />
-              <Route path="/charts/line" component={Line} />
-              <Redirect to="/home" />
+              <Redirect exact from='/' to='/home' />
+              <Route path='/home' component={Home} />
+              <Route path='/product' component={Product} />
+              <Route path='/category' component={Category} />
+              <Route path='/user' component={User} />
+              <Route path='/role' component={Role} />
+              <Route path='/charts/pie' component={Pie} />
+              <Route path='/charts/bar' component={Bar} />
+              <Route path='/charts/line' component={Line} />
+              <Route component={NotFound} />
             </Switch>
           </Content>
           <Footer style={{ textAlign: 'center', color: '#cccccc' }}>Hello World Forever!</Footer>
@@ -68,6 +68,6 @@ class Admin extends Component {
 }
 
 export default connect(
-  (state) =>({user:state.user}),
-  {}
+  (state) => ({ user: state.user }),
+  {},
 )(Admin);
