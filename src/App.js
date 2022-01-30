@@ -1,19 +1,76 @@
 import React, { Component } from 'react';
-import Login from './pages/login/Login';
-import Admin from './pages/admin/Admin';
+import PropTypes from 'prop-types';
+import { increment, decrement } from './redux/actions';
 
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-
-/* アプリのルートApp*/
 export default class App extends Component {
+  static propTypes = {
+    store: PropTypes.object.isRequired,
+  };
+  constructor(props) {
+    super(props);
+    // this.state = {count:0}
+    this.numberRef = React.createRef();
+  }
+
+  increment = () => {
+    const number = this.numberRef.current.value * 1;
+    // this.setState((state) => {
+    //   return { count: state.count + number };
+    // });
+
+    // this.props.store.dispatch({ type: 'INCREMENT', data: number });
+
+    this.props.store.dispatch(increment(number));
+  };
+
+  decrement = () => {
+    const number = this.numberRef.current.value * 1;
+    // this.setState((state) => {
+    //   return { count: state.count - number };
+    // });
+    this.props.store.dispatch(decrement(number));
+  };
+
+  incrementIfOdd = () => {
+    const number = this.numberRef.current.value * 1;
+
+    if (this.props.store.getState() % 2 === 1) {
+      // this.setState((state) => {
+      //   return { count: state.count + number };
+      // });
+      this.props.store.dispatch(increment(number));
+    }
+  };
+
+  incrementAsync = () => {
+    const number = this.numberRef.current.value * 1;
+    setTimeout(() => {
+      // this.setState((state) => {
+      //   return { count: state.count + number };
+      // });
+      this.props.store.dispatch(increment(number));
+    }, 1000);
+  };
+
   render() {
+    //const count = this.state.count;
+    const count = this.props.store.getState();
+
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/" component={Admin} />
-        </Switch>
-      </BrowserRouter>
+      <div>
+        <p>click {count} times </p>
+        <div>
+          <select ref={this.numberRef} name="" id="">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+          <button onClick={this.increment}>+</button>
+          <button onClick={this.decrement}>-</button>
+          <button onClick={this.incrementIfOdd}>increment if odd</button>
+          <button onClick={this.incrementAsync}>increment async</button>
+        </div>
+      </div>
     );
   }
 }

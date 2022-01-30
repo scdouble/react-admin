@@ -14,6 +14,7 @@ import Role from '../role/Role';
 import Bar from '../charts/Bar';
 import Pie from '../charts/Pie';
 import Line from '../charts/Line';
+import { connect } from 'react-redux';
 
 const { Footer, Sider, Content } = Layout;
 
@@ -28,11 +29,15 @@ class Admin extends Component {
   };
 
   render() {
-    const user = memoryUtils.user;
+    console.log("Admin::render");
+    // const user = memoryUtils.user;
+
+    const {user} = this.props
 
     // メモリにログインのユーザデータがなければ
     if (!user || !user._id) {
       // loginに遷移
+      console.log("go to /login");
       return <Redirect to="/login" />;
     }
     return (
@@ -62,4 +67,7 @@ class Admin extends Component {
   }
 }
 
-export default Admin;
+export default connect(
+  (state) =>({user:state.user}),
+  {}
+)(Admin);

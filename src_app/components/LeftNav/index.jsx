@@ -1,25 +1,29 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+
 import './index.css';
 import logo from '../../assets/logo.png';
 
 import { Icon, Menu } from 'antd';
 import menuList from '../../config/menuConfig';
-import memoryUtils from '../../utils/memoryUtils';
+
+import { setHeadTitle } from '../../redux/actions';
 
 const { SubMenu } = Menu;
 
 //左ナビゲーションバーのコンポーネント
 class LeftNav extends Component {
-
   /**
    * 現在ログインしているユーザがメニューアイテムにアクセス権限があるかどうか
    */
   hasAuth = (item) => {
     const { key, isPublic } = item;
-    const menus = memoryUtils.user.role.menus;
-    const username = memoryUtils.user.username;
+    // const menus = memoryUtils.user.role.menus;
+    // const username = memoryUtils.user.username;
 
+    const menus = this.props.user.role.menus;
+    const username = this.props.user.username;
 
     /**
      * 1.現在のユーザーがadmin
@@ -31,7 +35,7 @@ class LeftNav extends Component {
     if (username === 'admin' || item.isPublic || menus.indexOf(key) !== -1) {
       return true;
     } else if (item.children) {
-      return !!item.children.find(child => menus.indexOf(child.key) !== -1);
+      return !!item.children.find((child) => menus.indexOf(child.key) !== -1);
     } else {
       return false;
     }
@@ -44,24 +48,24 @@ class LeftNav extends Component {
     const path = this.props.location.pathname;
 
     return menuList.map((item) => {
-
       if (this.hasAuth(item)) {
-
-
         // もし現在のユーザが対応するmenuがあれば、
         if (!item.children) {
           return (
             <Menu.Item key={item.key}>
-              <Link to={item.key}>
+              <Link
+                to={item.key}
+                onClick={() => {
+                  return this.props.setHeadTitle(item.title);
+                }}
+              >
                 <Icon type={item.icon} />
                 <span>{item.title}</span>
               </Link>
             </Menu.Item>
           );
         } else {
-          const cItem = item.children.find(
-            (cItem) => path.indexOf(cItem.key) === 0,
-          );
+          const cItem = item.children.find((cItem) => path.indexOf(cItem.key) === 0);
           if (cItem) {
             this.openkey = item.key;
           }
@@ -70,9 +74,9 @@ class LeftNav extends Component {
               key={item.key}
               title={
                 <span>
-                <Icon type={item.icon} />
-                <span>{item.title}</span>
-              </span>
+                  <Icon type={item.icon} />
+                  <span>{item.title}</span>
+                </span>
               }
             >
               {this.getMenuNodes(item.children)}
@@ -80,7 +84,6 @@ class LeftNav extends Component {
           );
         }
       }
-
     });
   };
 
@@ -109,12 +112,7 @@ class LeftNav extends Component {
           </Link>
         </div>
 
-        <Menu
-          mode='inline'
-          theme='dark'
-          selectedKeys={[path]}
-          defaultOpenKeys={[openKey]}
-        >
+        <Menu mode='inline' theme='dark' selectedKeys={[path]} defaultOpenKeys={[openKey]}>
           {this.menuNodes}
         </Menu>
       </div>
@@ -123,4 +121,7 @@ class LeftNav extends Component {
 }
 
 // withRouteはHOCで新しいComponentにRouterのHistory location match属性を与える
-export default withRouter(LeftNav);
+export default connect(
+  (state) => ({ user: state.user }),
+  { setHeadTitle })
+(withRouter(LeftNav));

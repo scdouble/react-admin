@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Modal, Button } from 'antd';
+import { connect } from 'react-redux';
 
 import { reqWeather } from '../../api';
 import { formateDate } from '../../utils/dateUtils';
@@ -8,6 +9,8 @@ import memoryUtils from '../../utils/memoryUtils';
 import storageUtils from '../../utils/storageUtils';
 import menuList from '../../config/menuConfig';
 import './index.css';
+import {logout} from '../../redux/actions';
+
 
 // ヘッダー部のComponent
 class Header extends Component {
@@ -39,7 +42,7 @@ class Header extends Component {
         //　子メニュの中でItem,keyとPathを比較
         // 一致する項目があればTitleに表示
         const cItem = item.children.find((cItem) => {
-          return path.indexOf(cItem.key)===0;
+          return path.indexOf(cItem.key) === 0;
         });
         if (cItem) {
           title = cItem.title;
@@ -54,16 +57,15 @@ class Header extends Component {
       title: 'ログアウト',
       content: 'ログアウトします。よろしいですか？',
       onOk: () => {
-        console.log('OK');
-        storageUtils.removeUser();
-        memoryUtils.user = {};
-        this.props.history.replace('/login');
+        this.props.logout()
+        // this.props.history.replace('/login');
       },
       onCancel() {
-        console.log('');
+        console.log('user canceled logout');
       },
     });
   };
+
 
   componentDidMount() {
     this.getTime();
@@ -79,9 +81,10 @@ class Header extends Component {
   }
 
   render() {
-    const username = memoryUtils.user.username;
+    const { username } = this.props.user
     const { currentTime, weatherIcon, weatherSummary } = this.state;
-    const title = this.getTitle();
+    // const title = this.getTitle();
+    const title = this.props.headTitle
 
     return (
       <div className="header">
@@ -105,4 +108,10 @@ class Header extends Component {
   }
 }
 
-export default withRouter(Header);
+export default connect(
+  (state) => ({
+    headTitle: state.headTitle,
+    user: state.user
+  }),
+  {logout},
+)(withRouter(Header));

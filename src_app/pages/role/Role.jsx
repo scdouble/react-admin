@@ -3,9 +3,10 @@ import { reqAddRole, reqRoles, reqUpdateRole } from '../../api';
 import { Button, Card, message, Modal, Table } from 'antd';
 import AddRole from './AddRole';
 import AuthForm from './AuthForm';
-import memoryUtils from '../../utils/memoryUtils';
+// import memoryUtils from '../../utils/memoryUtils';
 import { formateDate } from '../../utils/dateUtils';
-import storageUtils from '../../utils/storageUtils';
+import { connect } from 'react-redux';
+import { logout } from '../../redux/actions';
 // const data = [
 //   {
 //     _id: 1,
@@ -14,7 +15,7 @@ import storageUtils from '../../utils/storageUtils';
 //     auth_name: 1,
 //   },
 // ];
-export default class Role extends Component {
+class Role extends Component {
   constructor(props) {
     super(props);
 
@@ -104,16 +105,14 @@ export default class Role extends Component {
     // 最新のmenus
     role.menus = this.auth.current.getMenus();
     role.auth_time = Date.now();
-    role.auth_name = memoryUtils.user.username;
+    role.auth_name = this.props.user.username;
     // APIに更新リクエスト
     const result = await reqUpdateRole(role);
     if (result.status === 0) {
       // this.getRoles()
-// 現在更新したRoleが自分が所属しているRoleなら再度ログインさせる
-      if (role._id === memoryUtils.user.role_id) {
-        memoryUtils.user = {};
-        storageUtils.removeUser();
-        this.props.history.replace('/login');
+      // 現在更新したRoleが自分が所属しているRoleなら再度ログインさせる
+      if (role._id === this.props.user.role_id) {
+        this.props.logout();
         message.info('ロールの権限が変更になりました。再度ログインしてください');
       } else {
         message.success('権限の設定が完了しました');
@@ -223,3 +222,8 @@ export default class Role extends Component {
     );
   }
 }
+
+export default connect(
+  (state) => ({ user: state.user }),
+  { logout },
+)(Role);
