@@ -10,7 +10,6 @@ export default class Counter extends Component {
     count: PropTypes.number.isRequired,
     increment: PropTypes.func.isRequired,
     decrement: PropTypes.func.isRequired,
-    incrementAsync: PropTypes.func.isRequired,
   };
   constructor(props) {
     super(props);
@@ -54,16 +53,15 @@ export default class Counter extends Component {
 
   incrementAsync = () => {
     const number = this.numberRef.current.value * 1;
-    // setTimeout(() => {
-    //   // this.setState((state) => {
-    //   //   return { count: state.count + number };
-    //   // });
-    //   // this.props.store.dispatch(increment(number));
+    setTimeout(() => {
+      // this.setState((state) => {
+      //   return { count: state.count + number };
+      // });
+      // this.props.store.dispatch(increment(number));
 
-    //   this.props.increment(number);
-    // }, 1000);
+      this.props.increment(number);
+    }, 1000);
 
-    this.props.incrementAsync(number)
   };
 
   render() {

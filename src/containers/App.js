@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { connect } from '../lib/react-redux';
 import Counter from '../components/Counter';
-import { increment, decrement, incrementAsync} from '../redux/actions';
+import { decrement, increment } from '../redux/actions';
 
 // コンテナ用のコンポーネント
 // Connectを通じてUIコンポーネントを包む
@@ -19,7 +19,7 @@ import { increment, decrement, incrementAsync} from '../redux/actions';
 //   };
 // }
 
-const mapStateToProps = (state) => ({ count: state });
+// const mapStateToProps = (state) => ({ count: state });
 
 // dispatchが含まれているコードをUIコンポーネントの関数Propsにマッピングする
 /**
@@ -44,4 +44,7 @@ const mapStateToProps = (state) => ({ count: state });
 // };
 
 // export default connect(mapStateToProps, mapDispatchToProps)(Counter);
-export default connect((state) => ({ count: state }), { increment, decrement, incrementAsync})(Counter);
+export default connect(
+  (state) => ({ count: state.count }),
+  { increment, decrement })
+(Counter);
