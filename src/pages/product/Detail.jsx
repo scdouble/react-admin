@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Button, Card, Icon, List } from 'antd';
 import { BASE_IMG_URL } from '../../utils/constants';
 import { reqCategory } from '../../api';
+import memoryUtils from '../../utils/memoryUtils';
+
 const Item = List.Item;
 //プロダクトの詳細の子コンポーネント
 export default class ProductDetail extends Component {
@@ -13,8 +15,9 @@ export default class ProductDetail extends Component {
   async componentDidMount() {
     // this.getCateogry()
     // 表示している商品のCateoryIDを取得
-    const { pCategoryId, categoryId } = this.props.location.state.record;
+    // const { pCategoryId, categoryId } = this.props.location.state.record;
 
+    const { pCategoryId, categoryId } = memoryUtils.product;
     if (pCategoryId === '0') {
       //親カテゴリの名前を問い合わせる
       const result = await reqCategory(categoryId);
@@ -35,8 +38,15 @@ export default class ProductDetail extends Component {
     }
   }
 
+  // Unmountする前にメモリのデータを削除
+  componentWillUnmount() {
+    memoryUtils.product = {};
+  }
+
   render() {
-    const { name, desc, price, imgs, detail } = this.props.location.state.record;
+    // const { name, desc, price, imgs, detail } = this.props.location.state.record;
+    const { name, desc, price, imgs, detail } = memoryUtils.product;
+
     const { cName1, cName2 } = this.state;
 
     const title = (
@@ -45,48 +55,48 @@ export default class ProductDetail extends Component {
           onClick={() => {
             this.props.history.goBack();
           }}
-          type="link"
+          type='link'
         >
-          <Icon type="arrow-left" />
+          <Icon type='arrow-left' />
         </Button>
         商品の詳細
       </span>
     );
     const extra = <span>編集</span>;
     return (
-      <Card title={title} extra={extra} className="product-detail">
+      <Card title={title} extra={extra} className='product-detail'>
         <List>
           <Item>
-            <span className="left">商品名:</span>
+            <span className='left'>商品名:</span>
             <span>{name}</span>
           </Item>
           <Item>
-            <span className="left">商品の説明:</span>
+            <span className='left'>商品の説明:</span>
             <span>{desc}</span>
           </Item>
           <Item>
-            <span className="left">値段:</span>
+            <span className='left'>値段:</span>
             <span>¥{price}</span>
           </Item>
           <Item>
-            <span className="left">カテゴリー:</span>
+            <span className='left'>カテゴリー:</span>
             <span>
               {cName1} {cName2 ? '-->' + cName2 : null}
             </span>
           </Item>
           <Item>
-            <span className="left">画像:</span>
+            <span className='left'>画像:</span>
 
             {imgs.map((img) => {
               return (
                 <span>
-                  <img key={img} className="product-img" src={BASE_IMG_URL + img} alt={img} />
+                  <img key={img} className='product-img' src={BASE_IMG_URL + img} alt={img} />
                 </span>
               );
             })}
           </Item>
           <Item>
-            <span className="left">商品の詳細:</span>
+            <span className='left'>商品の詳細:</span>
             <span dangerouslySetInnerHTML={{ __html: detail }}></span>
           </Item>
         </List>

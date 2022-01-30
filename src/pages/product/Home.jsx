@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Card, Select, Button, Input, Icon, Table, message } from 'antd';
+import { Button, Card, Icon, Input, message, Select, Table } from 'antd';
 import { reqProducts, reqSearchProducts, reqUpdateProductStatus } from '../../api';
 import { PAGE_SIZE } from '../../utils/constants';
+import memoryUtils from '../../utils/memoryUtils';
 
 const { Option } = Select;
 
@@ -39,7 +40,7 @@ export default class ProductHome extends Component {
               <span>{record.status === 1 ? '販売中' : '取り下げ済み'}</span>
               <Button
                 onClick={() => this.updateStatus(record._id, record.status === 1 ? 2 : 1)}
-                type="primary"
+                type='primary'
               >
                 {record.status === 1 ? '取り下げ' : '販売'}
               </Button>
@@ -55,16 +56,16 @@ export default class ProductHome extends Component {
             <span>
               {/* ProductのObjectをRouteのStateとして目的にRouteに渡す */}
               <Button
-                onClick={() => this.props.history.push('/product/detail', { record })}
-                type="link"
+                onClick={() => {
+                  return this.showDetail(record);
+                }}
+                type='link'
               >
                 詳細
               </Button>
               <Button
-                onClick={() => {
-                  return this.props.history.push('/product/addupdate', record);
-                }}
-                type="link"
+                onClick={() => this.showUpdate(record)}
+                type='link'
               >
                 編集
               </Button>
@@ -73,6 +74,17 @@ export default class ProductHome extends Component {
         },
       },
     ];
+  };
+  showDetail = (product) => {
+    // 商品情報を一時的にメモリに保存してのちに詳細画面で使う
+    memoryUtils.product = product;
+    this.props.history.push('/product/detail');
+  };
+
+  showUpdate = (product) => {
+    // 商品情報を一時的にメモリに保存してのちに編集画面で使う
+    memoryUtils.product = product;
+    return this.props.history.push('/product/addupdate');
   };
 
   updateStatus = async (productId, status) => {
@@ -127,22 +139,22 @@ export default class ProductHome extends Component {
           value={searchType}
           style={{ width: 150 }}
         >
-          <Option value="productName">名前で検索</Option>
-          <Option value="productDesc">説明で検索</Option>
+          <Option value='productName'>名前で検索</Option>
+          <Option value='productDesc'>説明で検索</Option>
         </Select>
         <Input
           onChange={(event) => {
             this.setState({ searchName: event.target.value });
           }}
           value={searchName}
-          placeholder="キーワードを入力してください"
+          placeholder='キーワードを入力してください'
           style={{ width: 200, margin: '0 15px 0' }}
         />
         <Button
           onClick={() => {
             this.getProducts(1);
           }}
-          type="primary"
+          type='primary'
         >
           検索
         </Button>
@@ -150,8 +162,8 @@ export default class ProductHome extends Component {
     );
 
     const extra = (
-      <Button type="primary" onClick={() => this.props.history.push('/product/addupdate')}>
-        <Icon type="plus" />
+      <Button type='primary' onClick={() => this.props.history.push('/product/addupdate')}>
+        <Icon type='plus' />
         商品を追加
       </Button>
     );
@@ -159,7 +171,7 @@ export default class ProductHome extends Component {
       <Card title={title} extra={extra}>
         <Table
           bordered
-          rowKey="_id"
+          rowKey='_id'
           dataSource={products}
           loading={isLoading}
           columns={this.columns}

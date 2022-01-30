@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Card, Form, Input, Select, Cascader, Upload, Button, Icon, message } from 'antd';
-import { reqCategoryList } from '../../api';
+import { Button, Card, Cascader, Form, Icon, Input, message } from 'antd';
+import { reqAddOrUpdateProduct, reqCategoryList } from '../../api';
 import PicturesWall from './PictureWall';
 import RichTextEditor from './RichTextEditor';
-import { reqAddOrUpdateProduct } from '../../api';
+import memoryUtils from '../../utils/memoryUtils';
 
 const { Item } = Form;
 const { TextArea } = Input;
@@ -112,7 +112,7 @@ class ProductAddUpdate extends Component {
         const imgs = this.pw.current.getImgs();
         const detail = this.editor.current.getDetail();
 
-        const product = { name, desc, price, imgs, detail,pCategoryId,categoryId };
+        const product = { name, desc, price, imgs, detail, pCategoryId, categoryId };
 
         // 商品の更新であれば、IDを追加
         if (this.isUpdate) {
@@ -178,10 +178,18 @@ class ProductAddUpdate extends Component {
 
   componentWillMount() {
     // ルートから送られてくるデータを取得
-    const product = this.props.location.state;
-    this.isUpdate = !!product; //!!は強制的にBooleanに変換
+    // const product = this.props.location.state;
+    //  メモリの中からProductを取得
+    const product = memoryUtils.product;
+    //productの中に_idがあれば更新ということがわかる
+    this.isUpdate = !!product._id; //!!は強制的にBooleanに変換.
     // 商品の情報を保存、undefined防止のため、データがない場合は空のオブジェクトを付与
     this.product = product || {};
+  }
+
+  // Unmountする前にメモリのデータを削除
+  componentWillUnmount() {
+    memoryUtils.product = {};
   }
 
   render() {
@@ -211,8 +219,8 @@ class ProductAddUpdate extends Component {
 
     const title = (
       <span>
-        <Button type="link" onClick={() => this.props.history.goBack()}>
-          <Icon type="arrow-left"></Icon>
+        <Button type='link' onClick={() => this.props.history.goBack()}>
+          <Icon type='arrow-left' />
         </Button>
         <span>{this.isUpdate ? '商品を追加' : '商品を編集'}</span>
       </span>
@@ -222,48 +230,48 @@ class ProductAddUpdate extends Component {
       <Card title={title}>
         {/* Formの中でonSubmitを定義していたのなら、prevent defaultをわすれずに */}
         <Form {...formItemLayout}>
-          <Item label="商品名">
+          <Item label='商品名'>
             {getFieldDecorator('name', {
               initialValue: product.name,
               rules: [{ required: true, message: '商品名を入力してださい' }],
-            })(<Input placeholder="商品名を入力してください"></Input>)}
+            })(<Input placeholder='商品名を入力してください' />)}
           </Item>
-          <Item label="商品の説明">
+          <Item label='商品の説明'>
             {getFieldDecorator('desc', {
               initialValue: product.desc,
               rules: [{ required: true, message: '商品の説明を入力してださい' }],
-            })(<TextArea autoSize={{ minRows: 2 }}></TextArea>)}
+            })(<TextArea autoSize={{ minRows: 2 }} />)}
           </Item>
-          <Item label="商品の値段">
+          <Item label='商品の値段'>
             {getFieldDecorator('price', {
               initialValue: product.price,
               rules: [
                 { required: true, message: '値段を入力してださい' },
                 { validator: this.validatePrice },
               ],
-            })(<Input type="number" addonAfter="JPY"></Input>)}
+            })(<Input type='number' addonAfter='JPY' />)}
           </Item>
-          <Item label="カテゴリー">
+          <Item label='カテゴリー'>
             {getFieldDecorator('categoryIds', {
               initialValue: categoryIds,
               rules: [{ required: true, message: 'カテゴリーを選択してください' }],
             })(
               <Cascader
                 options={this.state.options}
-                placeholder="カテゴリーを選択してください"
+                placeholder='カテゴリーを選択してください'
                 /** 表示するカテゴリーリスト */
                 loadData={this.loadData}
               />,
             )}
           </Item>
-          <Item label="商品の画像">
+          <Item label='商品の画像'>
             <PicturesWall ref={this.pw} imgs={imgs} />
           </Item>
-          <Item label="商品の詳細" labelCol={{ span: 3 }} wrapperCol={{ span: 20 }}>
+          <Item label='商品の詳細' labelCol={{ span: 3 }} wrapperCol={{ span: 20 }}>
             <RichTextEditor ref={this.editor} detail={detail} />
           </Item>
           <Item>
-            <Button type="primary" onClick={this.submit}>
+            <Button type='primary' onClick={this.submit}>
               追加
             </Button>
           </Item>
